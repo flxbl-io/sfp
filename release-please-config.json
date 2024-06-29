@@ -1,14 +1,15 @@
 {
   "packages": {
     ".": {
-      "bootstrap-sha": "f0c5b62d",
       "changelog-path": "CHANGELOG.md",
       "release-type": "node",
       "bump-minor-pre-major": false,
       "bump-patch-for-minor-pre-major": false,
       "draft": true,
       "prerelease": false,
-      "include-component-in-tag":false
+      "include-component-in-tag":false,
+      "bootstrap-sha": "f0c5b62d",
+      "skip-github-release": true
     }
   },
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json"
