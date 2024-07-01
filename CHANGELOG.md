@@ -1,5 +1,12 @@
 # Changelog
 
+## [39.0.4](https://github.com/flxbl-io/sfp/compare/v39.0.3...v39.0.4) (2024-07-01)
+
+
+### Bug Fixes
+
+* **cicd:** fix move to prerelease in root ([c886ea1](https://github.com/flxbl-io/sfp/commit/c886ea17de57c301e1b145557dc7b78a21ecad02))
+
 ## [39.0.3](https://github.com/flxbl-io/sfp/compare/v39.0.2...v39.0.3) (2024-06-30)
 
 
