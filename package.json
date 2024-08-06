@@ -1,7 +1,7 @@
 {
   "name": "@flxbl-io/sfp",
   "description": "sfp is a CLI tool to help you manage your Salesforce projects in an artifact centric model",
-  "version": "39.1.0",
+  "version": "39.2.0",
   "license": "MIT",
   "author": "flxblio",
   "release": "June 24",

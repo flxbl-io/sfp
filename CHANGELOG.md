@@ -1,5 +1,20 @@
 # Changelog
 
+## [39.2.0](https://github.com/flxbl-io/sfp/compare/v39.1.0...v39.2.0) (2024-08-06)
+
+
+### Features
+
+* **dependency:install:** add release def filter v2 ([#108](https://github.com/flxbl-io/sfp/issues/108)) ([644f700](https://github.com/flxbl-io/sfp/commit/644f700d6c2b0babe849bdb1066a8432e54c33d2))
+
+
+### Bug Fixes
+
+* **dependency:resolver:** missing dependencies due to package directory order ([#107](https://github.com/flxbl-io/sfp/issues/107)) ([eb2fa37](https://github.com/flxbl-io/sfp/commit/eb2fa3787dd427f1eff963c123ede64478bd2a13))
+* **docs:** update license info ([f555bf4](https://github.com/flxbl-io/sfp/commit/f555bf482f931c0056e0799ee5e2d99f45cff0fd))
+* **fht:** fht/ft not being applied for post deployment ([#101](https://github.com/flxbl-io/sfp/issues/101)) ([93a01cf](https://github.com/flxbl-io/sfp/commit/93a01cf0dddded24a94c6a349c9950276f53b66f))
+* **schema:** fix missing enableFT to schema ([#106](https://github.com/flxbl-io/sfp/issues/106)) ([6138447](https://github.com/flxbl-io/sfp/commit/61384476edb31466524f8e83a0de6199802b6cf3))
+
 ## [39.1.0](https://github.com/flxbl-io/sfp/compare/v39.0.3...v39.1.0) (2024-07-16)
 
 
