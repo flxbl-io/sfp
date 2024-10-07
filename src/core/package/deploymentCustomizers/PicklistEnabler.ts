@@ -95,9 +95,7 @@ export default class PicklistEnabler implements DeploymentCustomizer {
 
                         let valueInfo: { [key: string]: string } = {};
                         valueInfo.fullName = value['valueName'];
-                        decodeURIComponent(valueInfo.fullName);
                         valueInfo.label = value['label'];
-                        decodeURIComponent(valueInfo.label);
                         valueInfo.default = value['default'] && value['default'] === true ? 'true' : 'false';
                         picklistValueInOrg.push(valueInfo);
                     }
@@ -180,9 +178,9 @@ export default class PicklistEnabler implements DeploymentCustomizer {
                 //ignore inactive values from source
                 if (!value?.isActive || value?.isActive == 'true') {
                     picklistValueSet.push({
-                        fullName: value['fullName'] ? decodeURI(value['fullName']) : value['fullName'],
+                        fullName: value['fullName'],
                         default: value.default,
-                        label: value['label'] ? decodeURI(value['label']) : value['label'],
+                        label: value['label'],
                     });
                 }
             }
@@ -190,9 +188,9 @@ export default class PicklistEnabler implements DeploymentCustomizer {
             //ignore inactive values from source
             if (!values?.isActive || values?.isActive == 'true') {
                 picklistValueSet.push({
-                    fullName: values['fullName'] ? decodeURI(values['fullName']) : values['fullName'],
+                    fullName: values['fullName'],
                     default: values.default,
-                    label: values['label'] ? decodeURI(values['label']) : values['label'],
+                    label: values['label'],
                 });
             }
         }
