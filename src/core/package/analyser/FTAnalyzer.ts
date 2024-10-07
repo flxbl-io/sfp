@@ -12,7 +12,7 @@ export default class FTAnalyser implements PackageAnalyzer {
         return "Feed Tracking Analyzer";
     }
 
-    public async analyze(sfpPackage: SfpPackage, componentSet:ComponentSet, logger:Logger): Promise<SfpPackage> {
+    public async analyze(sfpPackage: SfpPackage, logger: Logger, componentSet: ComponentSet): Promise<SfpPackage> {
         try {
 
             let ftFields: { [key: string]: Array<string> } = {};
