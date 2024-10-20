@@ -1,5 +1,13 @@
 # Changelog
 
+## [39.2.3](https://github.com/flxbl-io/sfp/compare/v39.2.2...v39.2.3) (2024-10-20)
+
+
+### Bug Fixes
+
+* **deps:** fix deps to mitigate issuses casued by sfplogger update ([#132](https://github.com/flxbl-io/sfp/issues/132)) ([75da44f](https://github.com/flxbl-io/sfp/commit/75da44f17a644dc9cc54ea355ae7f4c13e40a575))
+* **typo:** fix typo with unlocked package collection log ([443bbae](https://github.com/flxbl-io/sfp/commit/443bbae04c56b520551d90a2c40d63637a7cc436))
+
 ## [39.2.2](https://github.com/flxbl-io/sfp/compare/v39.2.1...v39.2.2) (2024-09-02)
 
 
