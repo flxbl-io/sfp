@@ -15,10 +15,10 @@ const Table = require('cli-table');
 export default class FlowActivator implements DeploymentCustomizer {
     async execute(
         sfpPackage: SfpPackage,
-        componentSet: ComponentSet,
         sfpOrg: SFPOrg,
         logger: Logger,
-        deploymentContext: DeploymentContext
+        deploymentContext: DeploymentContext,
+        componentSet: ComponentSet
     ): Promise<DeploySourceResult> {
         let sourceComponents = componentSet.getSourceComponents().toArray();
         let masterLabelsOfAllFlowsInPackage = [];
