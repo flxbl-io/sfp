@@ -27,10 +27,10 @@ export default class PicklistEnabler implements DeploymentCustomizer {
 
     async execute(
         sfpPackage: SfpPackage,
-        componentSet: ComponentSet,
         sfpOrg: SFPOrg,
         logger: Logger,
-        deploymentContext: DeploymentContext
+        deploymentContext: DeploymentContext,
+        componentSet?: ComponentSet
     ): Promise<DeploySourceResult> {
         try {
             let sourceComponents = componentSet.getSourceComponents().toArray();
