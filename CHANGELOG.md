@@ -1,5 +1,19 @@
 # Changelog
 
+## [39.3.0](https://github.com/flxbl-io/sfp/compare/v39.2.3...v39.3.0) (2024-12-03)
+
+
+### Features
+
+* **pool:** add password to fetched scratch org from pool ([#135](https://github.com/flxbl-io/sfp/issues/135)) ([299859b](https://github.com/flxbl-io/sfp/commit/299859b3e4f1c47c5660cf379f653f9ecec5a14b))
+
+
+### Bug Fixes
+
+* **dependency:** fix incorrect dependency resolution by favouring latest ([#143](https://github.com/flxbl-io/sfp/issues/143)) ([5e0dd5b](https://github.com/flxbl-io/sfp/commit/5e0dd5bdf1481780f0067859b30eb8180fc5a078))
+* error in windows "Error: EPERM: operation not permitted, unlink" ([#134](https://github.com/flxbl-io/sfp/issues/134)) ([357b118](https://github.com/flxbl-io/sfp/commit/357b11885872dfd59ef608a5c025147ccfac1ea1))
+* **sfppackage:** fix handling of URL-encoded spaces in repository URLs ([#138](https://github.com/flxbl-io/sfp/issues/138)) ([c50cd25](https://github.com/flxbl-io/sfp/commit/c50cd254a3faa675a9f717e1b2c758b575ce64c5))
+
 ## [39.2.3](https://github.com/flxbl-io/sfp/compare/v39.2.2...v39.2.3) (2024-10-20)
 
 
