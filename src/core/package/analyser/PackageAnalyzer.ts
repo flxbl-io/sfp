@@ -5,7 +5,7 @@ import SfpPackage from "../SfpPackage";
 export interface PackageAnalyzer
 {
   getName();
-  analyze(sfpPackage: SfpPackage,componentSet:ComponentSet,logger:Logger): Promise<SfpPackage>
+  analyze(sfpPackage: SfpPackage, logger: Logger, componentSet?: ComponentSet): Promise<SfpPackage>
   isEnabled(sfpPackage: SfpPackage,logger:Logger): Promise<boolean> 
 
   
