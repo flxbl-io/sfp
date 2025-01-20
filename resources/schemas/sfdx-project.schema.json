@@ -1149,6 +1149,12 @@
                     "description": "Disable Entitlement filtering in source package,which skips entitlements that are already in the target org",
                     "default": false
                 },
+                "permissionsetGroupTimeout": {
+                    "title": "Permission set group recalculation timeout",
+                    "type": "integer",
+                    "description": "Permission set group recalculation timeout",
+                    "default": false
+                },
                 "disableTransitiveDependencyResolver": {
                     "title": "Disable Transitive Dependency Resolver",
                     "type": "boolean",
