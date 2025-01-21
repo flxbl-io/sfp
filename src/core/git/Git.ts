@@ -1,6 +1,8 @@
 import SFPLogger, { Logger, LoggerLevel } from '@flxbl-io/sfp-logger';
 import simplegit, { SimpleGit } from 'simple-git';
 import fs = require('fs-extra');
+import path = require('path');
+import ignore from 'ignore';
 import GitIdentity from './GitIdentity';
 const tmp = require('tmp');
 
@@ -29,7 +31,7 @@ export default class Git {
         return this._git.revparse(['HEAD']);
     }
 
-    async getBaseBranchCommit(baseBranch:string): Promise<string> {
+    async getBaseBranchCommit(baseBranch: string): Promise<string> {
         return this._git.revparse([baseBranch]);
     }
 
@@ -134,8 +136,21 @@ export default class Git {
         SFPLogger.log(`Copying the repository to ${locationOfCopiedDirectory.name}`, LoggerLevel.INFO, logger);
         let repoDir = locationOfCopiedDirectory.name;
 
-        // Copy source directory to temp dir
-        fs.copySync(process.cwd(), repoDir);
+        // Read .gitignore file
+        const gitignore = ignore();
+        const gitignorePath = `${process.cwd()}/.gitignore`;
+        if (fs.existsSync(gitignorePath)) {
+            const gitignoreContent = fs.readFileSync(gitignorePath).toString();
+            gitignore.add(gitignoreContent);
+        }
+
+        // Copy source directory to temp dir respecting .gitignore
+        fs.copySync(process.cwd(), repoDir, {
+            filter: (src) => {
+                const relativePath = path.relative(process.cwd(), src);
+                return !relativePath || !gitignore.ignores(relativePath);
+            },
+        });
 
         //Initiate git on new repo on using the abstracted object
         let git = new Git(repoDir, logger);
@@ -172,7 +187,7 @@ export default class Git {
 
     public raw(commands: string[]) {
         return this._git.raw(commands);
-    }   
+    }
 
     public getRepositoryPath() {
         return this.repositoryLocation;
@@ -183,14 +198,12 @@ export default class Git {
     }
 
     async addSafeConfig(repoDir: string) {
-        try
-        {
-        //add workaround for safe directory (https://github.com/actions/runner/issues/2033)
-        await this._git.addConfig('safe.directory', repoDir, false, 'global');
-        }catch(error)
-        {
+        try {
+            //add workaround for safe directory (https://github.com/actions/runner/issues/2033)
+            await this._git.addConfig('safe.directory', repoDir, false, 'global');
+        } catch (error) {
             //ignore error
-            SFPLogger.log(`Unable to set safe.directory`,LoggerLevel.TRACE)
+            SFPLogger.log(`Unable to set safe.directory`, LoggerLevel.TRACE);
         }
     }
 
