@@ -1,5 +1,12 @@
 # Changelog
 
+## [39.4.2](https://github.com/flxbl-io/sfp/compare/v39.4.1...v39.4.2) (2025-01-21)
+
+
+### Bug Fixes
+
+* **tracking:** ensure local tracking after resetting remote tracking ([#152](https://github.com/flxbl-io/sfp/issues/152)) ([3e312e9](https://github.com/flxbl-io/sfp/commit/3e312e9e700e7d93143e016ae78f1d54deaecf43))
+
 ## [39.4.1](https://github.com/flxbl-io/sfp/compare/v39.4.0...v39.4.1) (2024-12-16)
 
 
