@@ -6,7 +6,16 @@ import { delay } from '../utils/Delay';
 const psGroupQuery = `SELECT Id,MasterLabel,Status FROM PermissionSetGroup WHERE Status IN ('Updating', 'Outdated')`;
 
 export default class PermissionSetGroupUpdateAwaiter {
-    constructor(private connection: Connection, private logger: Logger, private intervalBetweenRepeats = 60000) {}
+    private startTime: number;
+
+    constructor(
+        private connection: Connection,
+        private logger: Logger,
+        private intervalBetweenRepeats = 60000,
+        private timeoutInMs = 30 * 60 * 1000 // Default timeout of 30 minutes
+    ) {
+        this.startTime = Date.now();
+    }
 
     async waitTillAllPermissionSetGroupIsUpdated() {
         SFPLogger.log(
@@ -14,8 +23,19 @@ export default class PermissionSetGroupUpdateAwaiter {
             LoggerLevel.INFO,
             this.logger
         );
+
         while (true) {
             try {
+                // Check if timeout has been reached
+                if (Date.now() - this.startTime >= this.timeoutInMs) {
+                    SFPLogger.log(
+                        `Timeout of ${this.timeoutInMs/1000} seconds reached. Proceeding with deployment regardless of PermissionSetGroup status`,
+                        LoggerLevel.WARN,
+                        this.logger
+                    );
+                    break;
+                }
+
                 let records = await QueryHelper.query(psGroupQuery, this.connection, false);
                 if (records.length > 0) {
                     SFPLogger.log(

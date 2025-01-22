@@ -98,7 +98,7 @@ export abstract class InstallPackage {
             };
         }
     }
-    
+
     checkPackageDirectoryExists() {
         let absPackageDirectory: string = path.join(this.sfpPackage.sourceDir, this.packageDirectory);
         if (!fs.existsSync(absPackageDirectory)) {
@@ -107,11 +107,14 @@ export abstract class InstallPackage {
     }
 
     private async waitTillAllPermissionSetGroupIsUpdated() {
+        const projectConfig = ProjectConfig.getSFDXProjectConfig(this.sfpPackage.sourceDir);
         try {
             //Package Has Permission Set Group
             let permissionSetGroupUpdateAwaiter: PermissionSetGroupUpdateAwaiter = new PermissionSetGroupUpdateAwaiter(
                 this.connection,
-                this.logger
+                this.logger,
+                6000,//TODO fix
+                projectConfig.plugins.sfp.permissionsetGroupTimeout
             );
             await permissionSetGroupUpdateAwaiter.waitTillAllPermissionSetGroupIsUpdated();
         } catch (error) {
@@ -222,15 +225,15 @@ export abstract class InstallPackage {
         if (skipIfPackageInstalled) {
             let installationStatus = await this.sfpOrg.isArtifactInstalledInOrg(this.logger, this.sfpPackage);
             return !installationStatus.isInstalled;
-        } else if(this.sfpPackage.packageType == PackageType.Diff) 
+        } else if(this.sfpPackage.packageType == PackageType.Diff)
         {
           // If diff package, check if there are any changes to be deployed, else skip
            if(!this.sfpPackage.destructiveChanges && this.sfpPackage.metadataCount==0)
-           { 
+           {
             return false;
            }
         }
-        
+
          return true; // Always install packages if skipIfPackageInstalled is false
     }
 
@@ -363,7 +366,7 @@ export abstract class InstallPackage {
 
         let analyzers = AnalyzerRegistry.getAnalyzers();
         for (const analyzer of analyzers) {
-            if(await analyzer.isEnabled(this.sfpPackage, this.logger)) 
+            if(await analyzer.isEnabled(this.sfpPackage, this.logger))
             {
               SFPLogger.log(`Executing ${COLOR_KEY_MESSAGE(analyzer.getName())}`, LoggerLevel.INFO, this.logger);
               this.sfpPackage = await analyzer.analyze(this.sfpPackage,componentSet, this.logger);
@@ -489,7 +492,7 @@ export abstract class InstallPackage {
         deploymentOptions.rollBackOnError = true;
         return deploymentOptions;
     }
-    
+
     private getAStringOfSpecificTestClasses(apexTestClassses: string[]) {
         let specifedTests = apexTestClassses.join();
         return specifedTests;
