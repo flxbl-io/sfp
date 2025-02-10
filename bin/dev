@@ -1,0 +1,27 @@
+#!/usr/bin/env node
+
+const oclif = require('@oclif/core')
+
+const path = require('path')
+const project = path.join(__dirname, '..', 'tsconfig.json')
+
+// In dev mode -> use ts-node and dev plugins
+process.env.NODE_ENV = 'development'
+
+require('ts-node').register({
+    project,
+    // Use swc instead of the TypeScript compiler
+    swc: true,
+    // Optional: you can also add these for even more speed
+    transpileOnly: true, // Skip type checking
+    compilerOptions: {
+        // Skip module resolution
+        module: 'commonjs'
+    }
+})
+
+// In dev mode, always show stack traces
+oclif.settings.debug = true;
+
+// Start the CLI
+oclif.run().then(oclif.flush).catch(oclif.Errors.handle)
