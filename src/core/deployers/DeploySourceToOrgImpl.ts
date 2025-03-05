@@ -56,7 +56,7 @@ export default class DeploySourceToOrgImpl implements DeploymentExecutor {
             if (result.response.status == RequestStatus.Canceled) {
                 deploySourceResult.message = `The deployment request ${result.response.id} was cancelled by ${result.response.canceledByName}`;
             } else {
-                deploySourceResult.message = this.handlErrorMesasge(result);
+                deploySourceResult.message = this.handleErrorMessage(result);
             }
             deploySourceResult.response = result.response;
             deploySourceResult.result = false;
@@ -65,15 +65,21 @@ export default class DeploySourceToOrgImpl implements DeploymentExecutor {
         return deploySourceResult;
     }
 
-    private handlErrorMesasge(result: DeployResult): string {
+    private handleErrorMessage(result: DeployResult): string {
         if (result.response.numberComponentErrors == 0) {
-            //Check for test coverage warnings
-            if (result.response.details.runTestResult.codeCoverageWarnings) {
-                return 'Unable to deploy due to unsatisfactory code coverage and/or test failures';
-            } else return 'Unable to fetch report, Check your org for details';
+            // Check for test failures
+            const failures = result.response.details?.runTestResult?.failures;
+            if (failures && (Array.isArray(failures) ? failures.length > 0 : true)) {
+                return 'Unable to deploy due to test failures';
+            }
+            // Check for code coverage warnings
+            else if (result.response.details?.runTestResult?.codeCoverageWarnings) {
+                return 'Unable to deploy due to unsatisfactory code coverage';
+            } 
+            else return 'Unable to fetch report, Check your org for details';
         } else if (result.response.numberComponentErrors > 0) {
             return this.constructComponentErrorMessage(result.response.details.componentFailures, this.logger);
-        } else if (result.response.details.runTestResult) {
+        } else if (result.response.details?.runTestResult) {
             return 'Unable to deploy due to unsatisfactory code coverage and/or test failures';
         } else {
             return 'Unable to fetch report, Check your org for details';
