@@ -1,5 +1,18 @@
 # Changelog
 
+## [39.6.0](https://github.com/flxbl-io/sfp/compare/v39.5.1...v39.6.0) (2025-03-26)
+
+
+### Features
+
+* **ci:** retrieve and use version from package.json in Docker build ([25e7bf7](https://github.com/flxbl-io/sfp/commit/25e7bf724ef4a2b9e89e6ee99fe683c29e97d046))
+* **deps:** add cross-env to package.json for cross-platform compatibility ([28ae6f3](https://github.com/flxbl-io/sfp/commit/28ae6f3b01a77028b9bb38ac373a35b99d4636be))
+
+
+### Bug Fixes
+
+* **git:** add /tests/ to .gitignore ([741ade8](https://github.com/flxbl-io/sfp/commit/741ade881b927d8c65af8aa89e7149d98fc5d9ae))
+
 ## [39.5.1](https://github.com/flxbl-io/sfp/compare/v39.5.0...v39.5.1) (2025-02-17)
 
 
