@@ -730,7 +730,13 @@
                         "additionalProperties": false,
                         "properties": {
                             "adapter": {
-                                "enum": ["mixedContent", "matchingContentFile", "decomposed", "bundle", "default"],
+                                "enum": [
+                                    "mixedContent",
+                                    "matchingContentFile",
+                                    "decomposed",
+                                    "bundle",
+                                    "default"
+                                ],
                                 "type": "string"
                             },
                             "decomposition": {
@@ -1147,6 +1153,18 @@
                     "title": "Disable Entitlment filter",
                     "type": "boolean",
                     "description": "Disable Entitlement filtering in source package,which skips entitlements that are already in the target org",
+                    "default": false
+                },
+              "permissionsetGroupStatusCheckInterval": {
+                "title": "Permission set group status check interval",
+                "type": "integer",
+                "description": "Interval in milliseconds between permission set group update status checks",
+                "default": 60000
+              },
+                "permissionsetGroupTimeout": {
+                    "title": "Permission set group recalculation timeout",
+                    "type": "integer",
+                    "description": "Permission set group recalculation timeout",
                     "default": false
                 },
                 "disableTransitiveDependencyResolver": {
