@@ -6,6 +6,32 @@ import PermissionSetGroupUpdateAwaiter from '../../../src/core/permsets/Permissi
 import { expect } from '@jest/globals';
 
 describe('Await till permissionsets groups are updated', () => {
+    const noUpdatingPsgRecords: AnyJson = {
+        records: [],
+    };
+    const someUpdatingPsgRecords: AnyJson = {
+        records: [
+            {
+                attributes: {
+                    type: 'PermissionSetGroup',
+                    url: '/services/data/v64.0/sobjects/PermissionSetGroup/0PG250000008nhNGAQ',
+                },
+                Id: '0PG250000008nhNGAQ',
+                MasterLabel: 'PSG1',
+                Status: 'Updating',
+            },
+            {
+                attributes: {
+                    type: 'PermissionSetGroup',
+                    url: '/services/data/v64.0/sobjects/PermissionSetGroup/0PG250000008nnVGAQ',
+                },
+                Id: '0PG250000008nnVGAQ',
+                MasterLabel: 'PSG2',
+                Status: 'Updating',
+            },
+        ],
+    };
+
     it('should return if all permsets groups are updated', async () => {
         const testData = new MockTestOrgData();
 
@@ -15,11 +41,8 @@ describe('Await till permissionsets groups are updated', () => {
             contents: await testData.getConfig(),
         });
 
-        let records: AnyJson = {
-            records: [],
-        };
         $$.fakeConnectionRequest = (request: AnyJson): Promise<AnyJson> => {
-            return Promise.resolve(records);
+            return Promise.resolve(noUpdatingPsgRecords);
         };
 
         const connection: Connection = await Connection.create({
@@ -32,4 +55,137 @@ describe('Await till permissionsets groups are updated', () => {
         );
         await expect(permissionSetGroupUpdateAwaiter.waitTillAllPermissionSetGroupIsUpdated()).resolves.toBeUndefined();
     });
+
+    it('should return if all permsets groups are updated after waiting for some time', async () => {
+        const testData = new MockTestOrgData();
+
+        await $$.stubConfig({ [OrgConfigProperties.TARGET_ORG]: testData.username });
+        await $$.stubAuths(testData);
+        $$.setConfigStubContents('AuthInfoConfig', {
+            contents: await testData.getConfig(),
+        });
+
+        let tryCount = 0;
+        $$.fakeConnectionRequest = (request: AnyJson): Promise<AnyJson> => {
+            if (tryCount === 0) {
+                tryCount++;
+                return Promise.resolve(someUpdatingPsgRecords);
+            }
+            return Promise.resolve(noUpdatingPsgRecords);
+        };
+
+        // need tom mock the imported delay util to return immediately
+        jest.spyOn(require('../../utils/Delay'), 'delay').mockImplementation(() => Promise.resolve());
+
+        const connection: Connection = await Connection.create({
+            authInfo: await AuthInfo.create({ username: testData.username }),
+        });
+
+        let permissionSetGroupUpdateAwaiter: PermissionSetGroupUpdateAwaiter = new PermissionSetGroupUpdateAwaiter(
+            connection,
+            null
+        );
+        await expect(permissionSetGroupUpdateAwaiter.waitTillAllPermissionSetGroupIsUpdated()).resolves.toBeUndefined();
+    });
+
+    it('should keep trying until all permsets groups are updated if there is no maximum wait time', async () => {
+        const testData = new MockTestOrgData();
+
+        await $$.stubConfig({ [OrgConfigProperties.TARGET_ORG]: testData.username });
+        await $$.stubAuths(testData);
+        $$.setConfigStubContents('AuthInfoConfig', {
+            contents: await testData.getConfig(),
+        });
+
+        let tryCount = 0;
+        $$.fakeConnectionRequest = (request: AnyJson): Promise<AnyJson> => {
+            if (tryCount < 5) {
+                // 5th try
+                tryCount++;
+                return Promise.resolve(someUpdatingPsgRecords);
+            }
+            return Promise.resolve(noUpdatingPsgRecords);
+        };
+
+        // need tom mock the imported delay util to return immediately
+        jest.spyOn(require('../utils/Delay'), 'delay').mockImplementation(() => Promise.resolve());
+
+        const connection: Connection = await Connection.create({
+            authInfo: await AuthInfo.create({ username: testData.username }),
+        });
+
+        let permissionSetGroupUpdateAwaiter: PermissionSetGroupUpdateAwaiter = new PermissionSetGroupUpdateAwaiter(
+            connection,
+            null
+        );
+        await expect(permissionSetGroupUpdateAwaiter.waitTillAllPermissionSetGroupIsUpdated()).resolves.toBeUndefined();
+        expect(tryCount).toBe(5);
+    });
+
+    it('should keep trying until until max wait time is reached', async () => {
+        const testData = new MockTestOrgData();
+
+        await $$.stubConfig({ [OrgConfigProperties.TARGET_ORG]: testData.username });
+        await $$.stubAuths(testData);
+        $$.setConfigStubContents('AuthInfoConfig', {
+            contents: await testData.getConfig(),
+        });
+
+        $$.fakeConnectionRequest = (request: AnyJson): Promise<AnyJson> => {
+            return Promise.resolve(someUpdatingPsgRecords);
+        };
+
+        // need tom mock the imported delay util to return immediately
+        jest.spyOn(require('../utils/Delay'), 'delay').mockImplementation(() => Promise.resolve());
+
+        const connection: Connection = await Connection.create({
+            authInfo: await AuthInfo.create({ username: testData.username }),
+        });
+
+        let permissionSetGroupUpdateAwaiter: PermissionSetGroupUpdateAwaiter = new PermissionSetGroupUpdateAwaiter(
+            connection,
+            null,
+            100, // try every 100ms,
+            500 // max wait time of 500ms
+        );
+        await expect(permissionSetGroupUpdateAwaiter.waitTillAllPermissionSetGroupIsUpdated()).resolves.toBeUndefined();
+    });
+
+    it('should not reach maximum time if all permsets groups udpated', async () => {
+        const testData = new MockTestOrgData();
+
+        await $$.stubConfig({ [OrgConfigProperties.TARGET_ORG]: testData.username });
+        await $$.stubAuths(testData);
+        $$.setConfigStubContents('AuthInfoConfig', {
+            contents: await testData.getConfig(),
+        });
+
+        let tryCount = 0;
+        $$.fakeConnectionRequest = (request: AnyJson): Promise<AnyJson> => {
+            if (tryCount < 3) {
+                // 3rd try in 300ms
+                tryCount++;
+                return Promise.resolve(someUpdatingPsgRecords);
+            }
+            return Promise.resolve(noUpdatingPsgRecords);
+        };
+
+        // need tom mock the imported delay util to return immediately
+        jest.spyOn(require('../utils/Delay'), 'delay').mockImplementation(() => Promise.resolve());
+
+        const connection: Connection = await Connection.create({
+            authInfo: await AuthInfo.create({ username: testData.username }),
+        });
+
+        let permissionSetGroupUpdateAwaiter: PermissionSetGroupUpdateAwaiter = new PermissionSetGroupUpdateAwaiter(
+            connection,
+            null,
+            100, // try every 100ms,
+            500 // max wait time of 500ms
+        );
+        await expect(permissionSetGroupUpdateAwaiter.waitTillAllPermissionSetGroupIsUpdated()).resolves.toBeUndefined();
+        expect(tryCount).toBe(3); // 4 tries in total, first and then waiting 3 times
+    });
 });
+
+ 
