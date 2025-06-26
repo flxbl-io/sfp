@@ -3,17 +3,19 @@ import SFPLogger, { Logger, LoggerLevel } from '@flxbl-io/sfp-logger';
 import QueryHelper from '../queryHelper/QueryHelper';
 import { delay } from '../utils/Delay';
 
-const psGroupQuery = `SELECT Id,MasterLabel,Status FROM PermissionSetGroup WHERE Status IN ('Updating', 'Outdated')`;
+const psGroupQuery = `SELECT Id,MasterLabel,Status FROM PermissionSetGroup WHERE Status = 'Updating'`;
 
 export default class PermissionSetGroupUpdateAwaiter {
-    constructor(private connection: Connection, private logger: Logger, private intervalBetweenRepeats = 60000) {}
+    constructor(
+        private connection: Connection,
+        private logger: Logger,
+        private intervalBetweenRepeats = 30000,
+        private maxWaitingTime = undefined
+    ) {}
 
     async waitTillAllPermissionSetGroupIsUpdated() {
-        SFPLogger.log(
-            `Checking status of permission sets group..`,
-            LoggerLevel.INFO,
-            this.logger
-        );
+        SFPLogger.log(`Checking status of permission sets group..`, LoggerLevel.INFO, this.logger);
+        let totalTimeWaited = 0;
         while (true) {
             try {
                 let records = await QueryHelper.query(psGroupQuery, this.connection, false);
@@ -29,6 +31,17 @@ export default class PermissionSetGroupUpdateAwaiter {
                         this.logger
                     );
                     await delay(this.intervalBetweenRepeats);
+                    totalTimeWaited += this.intervalBetweenRepeats;
+                    if (this.maxWaitingTime && totalTimeWaited > this.maxWaitingTime) {
+                        SFPLogger.log(
+                            `Max waiting time of ${
+                                this.maxWaitingTime / 1000
+                            } seconds exceeded. Proceeding with deployment`,
+                            LoggerLevel.WARN,
+                            this.logger
+                        );
+                        break;
+                    }
                 } else {
                     SFPLogger.log(
                         `Proceeding with deployment, as no PermissionSetGroups are being updated`,
@@ -44,3 +57,4 @@ export default class PermissionSetGroupUpdateAwaiter {
         }
     }
 }
+ 
