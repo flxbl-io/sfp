@@ -87,14 +87,23 @@ export default class FTEnabler extends MetdataDeploymentCustomizer {
             //Modify the component set
             //Parsing is risky due to various encoding, so do an inplace replacement
             for (const sourceComponent of fetchedCustomFields.components.getSourceComponents()) {
-                let metadataOfComponent = fs.readFileSync(sourceComponent.xml).toString();
+                 // for each object
+                 for (const childComponent of sourceComponent.getChildren()) {
+                    // for each child metadata
+                    if (childComponent.type.name !== 'CustomField') {
+                        // skip if not a custom field
+                        continue;
+                    }
 
-                metadataOfComponent = metadataOfComponent.replace(
-                    '<trackFeedHistory>false</trackFeedHistory>',
-                    '<trackFeedHistory>true</trackFeedHistory>'
-                );
+                    let metadataOfComponent = fs.readFileSync(childComponent.xml).toString();
 
-                fs.writeFileSync(path.join(sourceComponent.xml), metadataOfComponent);
+                    metadataOfComponent = metadataOfComponent.replace(
+                        '<trackFeedHistory>false</trackFeedHistory>',
+                        '<trackFeedHistory>true</trackFeedHistory>'
+                    );
+
+                    fs.writeFileSync(path.join(childComponent.xml), metadataOfComponent);
+                }
             }
 
             return { location: fetchedCustomFields.location, componentSet: fetchedCustomFields.components };

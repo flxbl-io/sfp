@@ -88,22 +88,27 @@ export default class FHTEnabler extends MetdataDeploymentCustomizer {
             let sfpOrg = await SFPOrg.create({ connection: conn });
             let fetchedCustomFields = await customFieldFetcher.getCustomFields(sfpOrg, fieldList);
 
-
-
             //Modify the component set
             //Parsing is risky due to various encoding, so do an inplace replacement
             let sourceComponents = fetchedCustomFields.components.getSourceComponents().toArray();
             for (const sourceComponent of sourceComponents) {
-                let metadataOfComponent = fs.readFileSync(sourceComponent.xml).toString();
+                // for each object
+                for (const childComponent of sourceComponent.getChildren()) {
+                    // for each child metadata
+                    if (childComponent.type.name !== 'CustomField') {
+                        // skip if not a custom field
+                        continue;
+                    }
 
-                metadataOfComponent = metadataOfComponent.replace(
-                    '<trackHistory>false</trackHistory>',
-                    '<trackHistory>true</trackHistory>'
-                );
+                    let metadataOfComponent = fs.readFileSync(childComponent.xml).toString();
 
+                    metadataOfComponent = metadataOfComponent.replace(
+                        '<trackHistory>false</trackHistory>',
+                        '<trackHistory>true</trackHistory>'
+                    );
 
-
-                fs.writeFileSync(path.join(sourceComponent.xml), metadataOfComponent);
+                    fs.writeFileSync(path.join(childComponent.xml), metadataOfComponent);
+                }
             }
 
             return { location: fetchedCustomFields.location, componentSet: fetchedCustomFields.components };
