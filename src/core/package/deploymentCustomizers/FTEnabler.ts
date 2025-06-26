@@ -17,7 +17,7 @@ const QUERY_BODY =
     'SELECT QualifiedApiName, EntityDefinition.QualifiedApiName  FROM FieldDefinition WHERE IsFeedEnabled = true AND EntityDefinitionId IN ';
 
 export default class FTEnabler extends MetdataDeploymentCustomizer {
-    public async isEnabled(sfpPackage: SfpPackage, conn: Connection<Schema>, logger: Logger): Promise<boolean> {
+    public async isEnabled(sfpPackage: SfpPackage, conn: Connection<Schema>, _logger: Logger): Promise<boolean> {
         //ignore if its a scratch org
         const orgDetails = await new OrgDetailsFetcher(conn.getUsername()).getOrgDetails();
         if (orgDetails.isScratchOrg) return false;
@@ -49,8 +49,8 @@ export default class FTEnabler extends MetdataDeploymentCustomizer {
         logger: Logger
     ): Promise<{ location: string; componentSet: ComponentSet }> {
         //First retrieve all objects/fields  of interest from the package
-        let objList = [];
-        let fieldList = [];
+        let objList: string[] = [];
+        let fieldList: string[] = [];
         Object.keys(sfpPackage['ftFields']).forEach((key) => {
             objList.push(`'${key}'`);
             sfpPackage['ftFields'][key].forEach((field) => fieldList.push(key + '.' + field));
