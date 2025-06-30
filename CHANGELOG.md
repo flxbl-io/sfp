@@ -1,5 +1,13 @@
 # Changelog
 
+## [39.6.1](https://github.com/flxbl-io/sfp/compare/v39.6.0...v39.6.1) (2025-06-26)
+
+
+### Bug Fixes
+
+* streamline child component processing in FHTEnabler and FTEnabler ([#167](https://github.com/flxbl-io/sfp/issues/167)) ([0ee696c](https://github.com/flxbl-io/sfp/commit/0ee696cd9c90ede80e2e3f8450c28d171d4e8506))
+* update type definitions and clean up unused imports ([096c42e](https://github.com/flxbl-io/sfp/commit/096c42ebdf91fad98f4fe084db7cbee63da3754d))
+
 ## [39.6.0](https://github.com/flxbl-io/sfp/compare/v39.5.1...v39.6.0) (2025-03-26)
 
 
