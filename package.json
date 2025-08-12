@@ -1,10 +1,10 @@
 {
   "name": "@flxbl-io/sfp",
   "description": "sfp is a CLI tool to help you manage your Salesforce projects in an artifact centric model",
-  "version": "39.4.1",
+  "version": "39.6.1",
   "license": "MIT",
   "author": "flxblio",
-  "release": "December 24",
+  "release": "March 24",
   "bin": {
     "sfp": "./bin/run",
     "sfpowerscripts": "./bin/run"
@@ -18,7 +18,7 @@
     "@flxbl-io/apexlink": "4.0.1",
     "@flxbl-io/sfdx-process-wrapper": "3.0.0",
     "@flxbl-io/sfp-logger": "5.0.1",
-    "@flxbl-io/sfprofiles": "5.2.0",
+    "@flxbl-io/sfprofiles": "5.2.1",
     "@jsforce/jsforce-node": "^3.2.0",
     "@newrelic/telemetry-sdk": "^0.6.0",
     "@oclif/core": "2.11.8",
@@ -87,6 +87,7 @@
     "@types/js-yaml": "^4.0.5",
     "@types/marked": "4.0.2",
     "@types/semver": "7.5.8",
+    "cross-env": "^7.0.3",
     "husky": "^9.0.11",
     "jest": "^29.6.1",
     "oclif": "^3.10.0",
@@ -192,7 +193,7 @@
     "clean": "rimraf ./lib && rimraf tsconfig.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
     "snyk-protect": "snyk protect",
-    "test": "FORCE_COLOR=true jest --silent --verbose --coverage --detectOpenHandles"
+    "test": "cross-env FORCE_COLOR=true jest --silent --verbose --coverage --detectOpenHandles"
   },
   "snyk": true
 }

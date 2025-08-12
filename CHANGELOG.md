@@ -1,5 +1,46 @@
 # Changelog
 
+## [39.6.1](https://github.com/flxbl-io/sfp/compare/v39.6.0...v39.6.1) (2025-06-26)
+
+
+### Bug Fixes
+
+* streamline child component processing in FHTEnabler and FTEnabler ([#167](https://github.com/flxbl-io/sfp/issues/167)) ([0ee696c](https://github.com/flxbl-io/sfp/commit/0ee696cd9c90ede80e2e3f8450c28d171d4e8506))
+* update type definitions and clean up unused imports ([096c42e](https://github.com/flxbl-io/sfp/commit/096c42ebdf91fad98f4fe084db7cbee63da3754d))
+
+## [39.6.0](https://github.com/flxbl-io/sfp/compare/v39.5.1...v39.6.0) (2025-03-26)
+
+
+### Features
+
+* **ci:** retrieve and use version from package.json in Docker build ([25e7bf7](https://github.com/flxbl-io/sfp/commit/25e7bf724ef4a2b9e89e6ee99fe683c29e97d046))
+* **deps:** add cross-env to package.json for cross-platform compatibility ([28ae6f3](https://github.com/flxbl-io/sfp/commit/28ae6f3b01a77028b9bb38ac373a35b99d4636be))
+
+
+### Bug Fixes
+
+* **git:** add /tests/ to .gitignore ([741ade8](https://github.com/flxbl-io/sfp/commit/741ade881b927d8c65af8aa89e7149d98fc5d9ae))
+
+## [39.5.1](https://github.com/flxbl-io/sfp/compare/v39.5.0...v39.5.1) (2025-02-17)
+
+
+### Bug Fixes
+
+* **profiles:** update sfp profiles to 5.2.1 ([14af1f0](https://github.com/flxbl-io/sfp/commit/14af1f096566ad0cef3749abee631d68ce2abd48))
+
+## [39.5.0](https://github.com/flxbl-io/sfp/compare/v39.4.1...v39.5.0) (2025-02-12)
+
+
+### Features
+
+* **deps:** bump salesforce libs ([#157](https://github.com/flxbl-io/sfp/issues/157)) ([9ab1eca](https://github.com/flxbl-io/sfp/commit/9ab1eca9ec939af942a29d40a3c6f825528d0ddd))
+
+
+### Bug Fixes
+
+* **git:** respect .gitignore when copying source directory ([#158](https://github.com/flxbl-io/sfp/issues/158)) ([3592c50](https://github.com/flxbl-io/sfp/commit/3592c502efeac3b7fc13f02a7ddaa2a4627f3164))
+* **tracking:** ensure local tracking after resetting remote tracking ([#152](https://github.com/flxbl-io/sfp/issues/152)) ([3e312e9](https://github.com/flxbl-io/sfp/commit/3e312e9e700e7d93143e016ae78f1d54deaecf43))
+
 ## [39.4.1](https://github.com/flxbl-io/sfp/compare/v39.4.0...v39.4.1) (2024-12-16)
 
 
