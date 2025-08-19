@@ -18,10 +18,10 @@ export abstract class MetdataDeploymentCustomizer implements DeploymentCustomize
 
     
     async execute(sfpPackage: SfpPackage,
-                  componentSet: ComponentSet,
                   sfpOrg:SFPOrg,
                   logger: Logger,
-                  deploymentContext:DeploymentContext
+                  deploymentContext:DeploymentContext,
+                  componentSet: ComponentSet
                   ):Promise<DeploySourceResult>
     {
         if (await this.isEnabled(sfpPackage, sfpOrg.getConnection(), logger)) {

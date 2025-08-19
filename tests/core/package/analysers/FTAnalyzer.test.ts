@@ -116,7 +116,7 @@ describe('FT Analyzer', () => {
                 return '';
             },
         };
-        sfpPackage = await ftAnalyzer.analyze(sfpPackage,set,new VoidLogger());
+        sfpPackage = await ftAnalyzer.analyze(sfpPackage,new VoidLogger(),set);
         expect(sfpPackage['isFTFieldFound']).toBe(true);
         expect(sfpPackage['ftFields']).toBeDefined();
         let ftFields = sfpPackage['ftFields'];
@@ -194,7 +194,7 @@ describe('FT Analyzer', () => {
                 return '';
             },
         };
-        sfpPackage = await ftAnalyzer.analyze(sfpPackage,set,new VoidLogger());
+        sfpPackage = await ftAnalyzer.analyze(sfpPackage, new VoidLogger(), set);
         expect(sfpPackage['isFTFieldFound']).toBe(true);
         expect(sfpPackage['ftFields']).toBeDefined();
         let ftFields = sfpPackage['ftFields'];
@@ -274,7 +274,7 @@ describe('FT Analyzer', () => {
                 return '';
             },
         };
-        sfpPackage = await ftAnalyzer.analyze(sfpPackage,set,new VoidLogger());
+        sfpPackage = await ftAnalyzer.analyze(sfpPackage, new VoidLogger(), set);
         expect(sfpPackage['isFTFieldFound']).toBe(true);
         expect(sfpPackage['ftFields']).toBeDefined();
         let ftFields = sfpPackage['ftFields'];
@@ -354,7 +354,7 @@ describe('FT Analyzer', () => {
                 return '';
             },
         };
-        sfpPackage = await ftAnalyzer.analyze(sfpPackage,set,new VoidLogger());
+        sfpPackage = await ftAnalyzer.analyze(sfpPackage, new VoidLogger(), set);
         expect(sfpPackage['isFTFieldFound']).toBe(true);
         expect(sfpPackage['ftFields']).toBeDefined();
         let ftFields = sfpPackage['ftFields'];

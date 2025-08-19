@@ -120,15 +120,16 @@ export default class SfpPackageBuilder {
 
             sfpPackage.isTriggerAllTests = this.isAllTestsToBeTriggered(sfpPackage, logger);
 
+            const isDataPackage = sfpPackage.packageType == PackageType.Data;
             //Load component Set
-            let componentSet = ComponentSet.fromSource(
+            let componentSet = isDataPackage? undefined:ComponentSet.fromSource(
                 path.resolve(sfpPackage.workingDirectory, sfpPackage.projectDirectory, sfpPackage.packageDirectory)
             );
 
             //Run through all analyzers
             let analyzers = AnalyzerRegistry.getAnalyzers();
             for (const analyzer of analyzers) {
-                if (analyzer.isEnabled(sfpPackage, logger)) sfpPackage = await analyzer.analyze(sfpPackage,componentSet, logger);
+                if (analyzer.isEnabled(sfpPackage, logger)) sfpPackage = await analyzer.analyze(sfpPackage, logger, componentSet);
             }
         }
 
