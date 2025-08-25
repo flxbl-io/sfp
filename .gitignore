@@ -26,4 +26,4 @@ packages/apexlink/tests/resources/feature-mgmt/apexlink.json
 .nx
 .idea/
 .sfpowerscripts
-/tests/
+#/tests/

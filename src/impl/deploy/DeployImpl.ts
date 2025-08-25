@@ -25,6 +25,7 @@ import convertBuildNumDotDelimToHyphen from '../../core/utils/VersionNumberConve
 import ReleaseConfigLoader from '../release/ReleaseConfigLoader';
 import { Align, getMarkdownTable } from 'markdown-table-ts';
 import FileOutputHandler from '../../outputs/FileOutputHandler';
+import { NetworkErrorHandler, RetryConfig, DEFAULT_NETWORK_RETRY_CONFIG } from '../../core/utils/NetworkErrorHandler';
 
 const Table = require('cli-table');
 const retry = require('async-retry');
@@ -57,6 +58,10 @@ export interface DeployProps {
     releaseConfigPath?: string;
     filterByProvidedArtifacts?: string[];
     impactedPackagesAsPerBranch?: Map<string, string[]>;
+    retryOnConnectionErrors?: boolean;
+    maxConnectionRetries?: number;
+    initialRetryDelay?: number;
+    maxRetryDelay?: number;
 }
 
 export default class DeployImpl {
@@ -213,8 +218,22 @@ export default class DeployImpl {
                 }
 
                 let isToBeRetried: boolean = this.props.isRetryOnFailure;
+                
+                // Create network retry configuration
+                const networkRetryConfig: RetryConfig = {
+                    maxRetries: this.props.maxConnectionRetries ?? DEFAULT_NETWORK_RETRY_CONFIG.maxRetries,
+                    initialDelay: this.props.initialRetryDelay ?? DEFAULT_NETWORK_RETRY_CONFIG.initialDelay,
+                    maxDelay: this.props.maxRetryDelay ?? DEFAULT_NETWORK_RETRY_CONFIG.maxDelay,
+                    backoffMultiplier: DEFAULT_NETWORK_RETRY_CONFIG.backoffMultiplier,
+                    enableJitter: DEFAULT_NETWORK_RETRY_CONFIG.enableJitter,
+                };
+
+                let retryStartTime = Date.now();
+                let totalRetryAttempts = 0;
+                
                 let packageInstallationResult: PackageInstallationResult = await retry(
                     async (bail, attemptCount) => {
+                        totalRetryAttempts = attemptCount;
                         try {
                             try {
                                 await this.promotePackagesBeforeInstallation(packageInfo.sourceDirectory, sfpPackage);
@@ -242,13 +261,36 @@ export default class DeployImpl {
                                 isToBeRetried,
                                 installPackageResult,
                                 attemptCount,
-                                this.props.maxRetryCount
+                                this.props.maxRetryCount,
+                                networkRetryConfig,
+                                this.props.retryOnConnectionErrors ?? true
                             );
 
                             if (isToBeRetried) {
                                 throw new Error(installPackageResult.message);
                             } else return installPackageResult;
                         } catch (error) {
+                            // Check for network errors first if network retry is enabled
+                            if (
+                                (this.props.retryOnConnectionErrors ?? true) &&
+                                NetworkErrorHandler.isNetworkError(error) &&
+                                NetworkErrorHandler.shouldRetryNetworkError(error, attemptCount, networkRetryConfig)
+                            ) {
+                                const delayMs = NetworkErrorHandler.calculateRetryDelay(attemptCount, networkRetryConfig);
+                                
+                                NetworkErrorHandler.logRetryAttempt(
+                                    error,
+                                    attemptCount,
+                                    networkRetryConfig.maxRetries,
+                                    delayMs,
+                                    this.props.logger
+                                );
+
+                                // Add the delay before retrying
+                                await NetworkErrorHandler.delay(delayMs);
+                                throw error; // Re-throw to trigger retry
+                            }
+                            
                             if (isToBeRetried) {
                                 throw error;
                             } else {
@@ -277,18 +319,44 @@ export default class DeployImpl {
                             isToBeRetried: boolean,
                             installPackageResult: PackageInstallationResult,
                             retryCount: number,
-                            maxRetryCount: number
+                            maxRetryCount: number,
+                            networkRetryConfig?: RetryConfig,
+                            enableNetworkRetry?: boolean
                         ): boolean {
                             //override current value when encountering such issue
                             if (installPackageResult.result === PackageInstallationStatus.Failed) {
+                                // Check for network errors first if network retry is enabled
+                                if (
+                                    enableNetworkRetry &&
+                                    NetworkErrorHandler.isNetworkError(installPackageResult.message) &&
+                                    NetworkErrorHandler.shouldRetryNetworkError(
+                                        installPackageResult.message,
+                                        retryCount,
+                                        networkRetryConfig || DEFAULT_NETWORK_RETRY_CONFIG
+                                    )
+                                ) {
+                                    return true;
+                                }
+                                
+                                // Existing retry conditions
                                 if (installPackageResult.message?.includes('ongoing background job')) return true;
                                 else if (isToBeRetried && retryCount <= maxRetryCount) return true;
                                 else return false;
                             } else return false;
                         }
                     },
-                    { retries: 10, minTimeout: 30000 }
+                    { 
+                        retries: Math.max(10, networkRetryConfig.maxRetries), 
+                        minTimeout: 1000, // Use smaller timeout since we handle delays manually
+                        randomize: false  // We handle jitter in NetworkErrorHandler
+                    }
                 );
+
+                // Log successful retry recovery if retries were attempted
+                if (totalRetryAttempts > 1) {
+                    const totalRetryTime = Date.now() - retryStartTime;
+                    NetworkErrorHandler.logRetrySuccess(totalRetryAttempts, totalRetryTime, this.props.logger);
+                }
 
                 if (packageInstallationResult.result === PackageInstallationStatus.Succeeded) {
                     deployed.push(packageInfo);

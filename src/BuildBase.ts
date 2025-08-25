@@ -89,6 +89,22 @@ export default abstract class BuildBase extends SfpCommand {
             aliases: ['domain'],
             description: messages.getMessage('releaseConfigFileFlagDescription'),
         }),
+        retryOnConnectionErrors: Flags.boolean({
+            description: 'Retry package installations on network connection errors with exponential backoff',
+            default: true,
+        }),
+        maxConnectionRetries: Flags.integer({
+            description: 'Maximum number of retry attempts for connection errors',
+            default: 5,
+        }),
+        initialRetryDelay: Flags.integer({
+            description: 'Initial delay in milliseconds before retrying connection errors',
+            default: 5000,
+        }),
+        maxRetryDelay: Flags.integer({
+            description: 'Maximum delay in milliseconds between connection error retries',
+            default: 300000,
+        }),
     };
 
     public async execute() {
