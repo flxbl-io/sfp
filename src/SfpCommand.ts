@@ -18,7 +18,7 @@ export default abstract class SfpCommand extends Command {
 
     protected hubOrg:Org;
     protected org:Org;
-    public flags: Interfaces.ParserOutput['flags'] & { json?: boolean; };
+    public flags: Interfaces.ParserOutput<any, any>['flags'] & { json?: boolean; };
 
    
     private isSfpowerkitFound: boolean;
@@ -43,7 +43,7 @@ export default abstract class SfpCommand extends Command {
         // Remove all existing warning listeners and add our own that logs to TRACE
         process.removeAllListeners('warning');
         process.on('warning', (warning) => {
-            SFPLogger.log(warning.stack || warning.toString(), LoggerLevel.TRACE);
+            SFPLogger.log(warning.stack ?? warning.toString(), LoggerLevel.TRACE);
         });
 
         //Always enable color by default
@@ -162,7 +162,7 @@ export default abstract class SfpCommand extends Command {
         SFPStatsSender.initializeLogBasedMetrics();
     }
 
-    private setLogLevel(flags:Interfaces.ParserOutput['flags']) {
+    private setLogLevel(flags:Interfaces.ParserOutput<any, any>['flags']) {
         if (flags.loglevel === 'trace' || flags.loglevel === 'TRACE') SFPLogger.logLevel = LoggerLevel.TRACE;
         else if (flags.loglevel === 'debug' || flags.loglevel === 'DEBUG')
             SFPLogger.logLevel = LoggerLevel.DEBUG;

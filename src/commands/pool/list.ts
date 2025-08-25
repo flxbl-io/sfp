@@ -7,6 +7,7 @@ import { Messages } from '@salesforce/core';
 import SfpCommand from '../../SfpCommand';
 import { Flags, ux } from '@oclif/core';
 import Table = require('cli-table');
+import { TableInstance } from '../../types/cli-table';
 import { loglevel, orgApiVersionFlagSfdxStyle, targetdevhubusername } from '../../flags/sfdxflags';
 
 // Initialize Messages with the current plugin directory
@@ -72,31 +73,31 @@ export default class List extends SfpCommand {
 
         if (!this.flags.json) {
             if (result.length > 0) {
-                if (ux.stdout) {
+                if (typeof ux.stdout === 'function') {
                     ux.stdout(`======== Scratch org Details ========`);
                 }
 
                 if (!this.flags.tag) {
-                    if (ux.stdout) {
+                    if (typeof ux.stdout === 'function') {
                         ux.stdout(`List of all the pools in the org`);
                     }
 
                     this.logTagCount(result);
-                    if (ux.stdout) {
+                    if (typeof ux.stdout === 'function') {
                         ux.stdout('===================================');
                     }
                 }
 
                 if (this.flags.allscratchorgs) {
-                    if (ux.stdout) {
+                    if (typeof ux.stdout === 'function') {
                         ux.stdout(`Used Scratch Orgs in the pool: ${scratchOrgInuse.length}`);
                     }
                 }
-                if (ux.stdout) {
+                if (typeof ux.stdout === 'function') {
                     ux.stdout(`Unused Scratch Orgs in the Pool : ${scratchOrgNotInuse.length} \n`);
                 }
                 if (scratchOrgInProvision.length && scratchOrgInProvision.length > 0) {
-                    if (ux.stdout) {
+                    if (typeof ux.stdout === 'function') {
                         ux.stdout(`Scratch Orgs being provisioned in the Pool : ${scratchOrgInProvision.length} \n`);
                     }
                 }
@@ -137,14 +138,15 @@ export default class List extends SfpCommand {
             });
         });
 
-        const table = new Table({
+        const table: TableInstance = new Table({
             head: ['Tag', 'Count']
+        }) as TableInstance;
+        tagArray.forEach((item: {tag: string; count: number}) => {
+            table.push([item.tag, String(item.count)]);
         });
-        tagArray.forEach((item: any) => {
-            table.push([item.tag, item.count]);
-        });
-        if (ux.stdout) {
-            ux.stdout(table.toString());
+        const output = table.toString();
+        if (typeof ux.stdout === 'function') {
+            ux.stdout(output);
         }
     }
 }

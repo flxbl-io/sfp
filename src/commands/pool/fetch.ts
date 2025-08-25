@@ -15,6 +15,7 @@ import getFormattedTime from '../../core/utils/GetFormattedTime';
 import SfpCommand from '../../SfpCommand';
 import { Flags, ux } from '@oclif/core';
 import Table = require('cli-table');
+import { TableInstance } from '../../types/cli-table';
 import { loglevel, orgApiVersionFlagSfdxStyle, targetdevhubusername } from '../../flags/sfdxflags';
 
 // Initialize Messages with the current plugin directory
@@ -106,7 +107,9 @@ export default class Fetch extends SfpCommand {
         if (!this.flags.json && !this.flags.sendtouser) {
             await this.displayOrgContents(result);
 
-            ux.stdout(`======== Scratch org details ========`);
+            if (typeof ux.stdout === 'function') {
+                ux.stdout(`======== Scratch org details ========`);
+            }
             let list = [];
             for (let [key, value] of Object.entries(result)) {
                 if (value) {
@@ -116,14 +119,15 @@ export default class Fetch extends SfpCommand {
             //add alias info
             if (this.flags.alias) list.push({ key: 'alias', value: this.flags.alias });
 
-            const table = new Table({
+            const table: TableInstance = new Table({
                 head: ['Key', 'Value']
-            });
-            list.forEach((item: any) => {
+            }) as TableInstance;
+            list.forEach((item: {key: string; value: string}) => {
                 table.push([item.key, item.value]);
             });
-            if (ux.stdout) {
-                ux.stdout(table.toString());
+            const output = table.toString();
+            if (typeof ux.stdout === 'function') {
+                ux.stdout(output);
             }
             this.printFetchSummary(!this.flags.nosourcetracking, Date.now() - fetchStartTime);
         }
