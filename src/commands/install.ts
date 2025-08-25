@@ -78,6 +78,22 @@ export default class Install extends SfpCommand {
         enablesourcetracking: Flags.boolean({
             description: messages.getMessage('enableSourceTrackingFlagDescription'),
         }),
+        retryOnConnectionErrors: Flags.boolean({
+            description: 'Retry package installations on network connection errors with exponential backoff',
+            default: true,
+        }),
+        maxConnectionRetries: Flags.integer({
+            description: 'Maximum number of retry attempts for connection errors',
+            default: 5,
+        }),
+        initialRetryDelay: Flags.integer({
+            description: 'Initial delay in milliseconds before retrying connection errors',
+            default: 5000,
+        }),
+        maxRetryDelay: Flags.integer({
+            description: 'Maximum delay in milliseconds between connection error retries',
+            default: 300000,
+        }),
         logsgroupsymbol,
         loglevel
     };
@@ -118,7 +134,11 @@ export default class Install extends SfpCommand {
             baselineOrg: this.flags.baselineorg,
             isRetryOnFailure: this.flags.retryonfailure,
             releaseConfigPath: this.flags.releaseconfig,
-            filterByProvidedArtifacts: this.flags.artifacts
+            filterByProvidedArtifacts: this.flags.artifacts,
+            retryOnConnectionErrors: this.flags.retryOnConnectionErrors,
+            maxConnectionRetries: this.flags.maxConnectionRetries,
+            initialRetryDelay: this.flags.initialRetryDelay,
+            maxRetryDelay: this.flags.maxRetryDelay,
         };
 
         try {

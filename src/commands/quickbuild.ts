@@ -35,6 +35,10 @@ export default class QuickBuild extends BuildBase {
                 useLatestGitTags: true,
                 skipPackageDescriptorChange: false,
             },
+            retryOnConnectionErrors: this.flags.retryOnConnectionErrors,
+            maxConnectionRetries: this.flags.maxConnectionRetries,
+            initialRetryDelay: this.flags.initialRetryDelay,
+            maxRetryDelay: this.flags.maxRetryDelay,
         };
         return buildProps;
     }
