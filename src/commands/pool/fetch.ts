@@ -14,6 +14,7 @@ import { COLOR_TIME } from '@flxbl-io/sfp-logger';
 import getFormattedTime from '../../core/utils/GetFormattedTime';
 import SfpCommand from '../../SfpCommand';
 import { Flags, ux } from '@oclif/core';
+const Table = require('cli-table');
 import { loglevel, orgApiVersionFlagSfdxStyle, targetdevhubusername } from '../../flags/sfdxflags';
 
 // Initialize Messages with the current plugin directory
@@ -105,7 +106,7 @@ export default class Fetch extends SfpCommand {
         if (!this.flags.json && !this.flags.sendtouser) {
             await this.displayOrgContents(result);
 
-            ux.log(`======== Scratch org details ========`);
+            ux.stdout(`======== Scratch org details ========`);
             let list = [];
             for (let [key, value] of Object.entries(result)) {
                 if (value) {
@@ -115,7 +116,13 @@ export default class Fetch extends SfpCommand {
             //add alias info
             if (this.flags.alias) list.push({ key: 'alias', value: this.flags.alias });
 
-            ux.table(list, {key:{},value:{}});
+            const table = new Table({
+                head: ['Key', 'Value']
+            });
+            list.forEach((item) => {
+                table.push([item.key, item.value]);
+            });
+            ux.stdout(table.toString());
             this.printFetchSummary(!this.flags.nosourcetracking, Date.now() - fetchStartTime);
         }
 

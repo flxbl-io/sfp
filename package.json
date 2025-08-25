@@ -1,199 +1,199 @@
 {
-  "name": "@flxbl-io/sfp",
-  "description": "sfp is a CLI tool to help you manage your Salesforce projects in an artifact centric model",
-  "version": "39.6.1",
-  "license": "MIT",
-  "author": "flxblio",
-  "release": "March 24",
-  "bin": {
-    "sfp": "./bin/run",
-    "sfpowerscripts": "./bin/run"
-  },
-  "bugs": "https://github.com/flxbl-io/sfp/issues",
-  "publishConfig": {
-    "access": "public"
-  },
-  "dependencies": {
-    "@apexdevtools/apex-parser": "^4.0.0",
-    "@flxbl-io/apexlink": "4.0.1",
-    "@flxbl-io/sfdx-process-wrapper": "3.0.0",
-    "@flxbl-io/sfp-logger": "5.0.1",
-    "@flxbl-io/sfprofiles": "5.2.1",
-    "@jsforce/jsforce-node": "^3.2.0",
-    "@newrelic/telemetry-sdk": "^0.6.0",
-    "@oclif/core": "2.11.8",
-    "@oclif/plugin-commands": "^3.0.3",
-    "@oclif/plugin-help": "5.2.17",
-    "@salesforce/apex-node": "7.0.3",
-    "@salesforce/core": "8.8.2",
-    "@salesforce/kit": "3.2.3",
-    "@salesforce/packaging": "4.2.15",
-    "@salesforce/schemas": "1.9.0",
-    "@salesforce/source-deploy-retrieve": "12.14.0",
-    "@salesforce/source-tracking": "7.3.11",
-    "adm-zip": "^0.5.10",
-    "ajv": "8.15.0",
-    "antlr4ts": "0.5.0-alpha.4",
-    "async-retry": "^1.3.1",
-    "axios": "^1.7.4",
-    "bottleneck": "^2.19.5",
-    "chalk": "^4.1.2",
-    "cli-table": "0.3.11",
-    "datadog-metrics": "^0.9.3",
-    "dedent": "^1.5.1",
-    "dotenv": "16.3.1",
-    "fast-xml-parser": "4.5.0",
-    "fs-extra": "^11.1.1",
-    "git-url-parse": "^16.0.0",
-    "glob": "^10.3.3",
-    "handlebars": "^4.7.7",
-    "hot-shots": "^8.5.0",
-    "ignore": "^5.1.6",
-    "js-yaml": "^4.0.0",
-    "lodash": "^4.17.21",
-    "markdown-table": "^2.0.0",
-    "markdown-table-ts": "^1.0.3",
-    "marked": "4.0.16",
-    "marked-terminal": "5.1.1",
-    "neverthrow": "4.4.2",
-    "object-hash": "^2.1.1",
-    "pino": "8.21.0",
-    "pino-abstract-transport": "1.2.0",
-    "rimraf": "^5.0.1",
-    "semver": "7.6.2",
-    "simple-git": "3.19.1",
-    "tar": "^6.1.9",
-    "tmp": "^0.2.1",
-    "xml2js": "^0.6.0"
-  },
-  "devDependencies": {
-    "@babel/core": "7.18.2",
-    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.17.12",
-    "@babel/plugin-proposal-optional-chaining": "7.17.12",
-    "@commitlint/cli": "^19.3.0",
-    "@commitlint/config-conventional": "^19.2.2",
-    "@jest/globals": "^29.6.1",
-    "@oclif/plugin-command-snapshot": "^3",
-    "@oclif/test": "^2",
-    "@salesforce/dev-config": "4.2.0",
-    "@salesforce/ts-sinon": "^1.4.22",
-    "@salesforce/ts-types": "2.0.10",
-    "@swc/core": "^1.10.14",
-    "@types/adm-zip": "^0.4.33",
-    "@types/fast-levenshtein": "0.0.4",
-    "@types/fs-extra": "11.0.4",
-    "@types/git-url-parse": "9.0.3",
-    "@types/jest": "^29.5.3",
-    "@types/js-yaml": "^4.0.5",
-    "@types/marked": "4.0.2",
-    "@types/semver": "7.5.8",
-    "cross-env": "^7.0.3",
-    "husky": "^9.0.11",
-    "jest": "^29.6.1",
-    "oclif": "^3.10.0",
-    "ts-jest": "29.1.5",
-    "ts-node": "10.9.2",
-    "ts-patch": "^3.2.0",
-    "ts-retry-promise": "0.8.1",
-    "typescript": "^5.4.5"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  },
-  "files": [
-    "/lib",
-    "/messages",
-    "/npm-shrinkwrap.json",
-    "/scripts",
-    "/resources",
-    "/oclif.manifest.json"
-  ],
-  "homepage": "https://github.com/flxbl-io/sfp",
-  "keywords": [
-    "flxblio",
-    "sfp-cli",
-    "sfdx",
-    "sfdx-plugin",
-    "salesforce",
-    "sf",
-    "sf-plugin",
-    "orchestrator"
-  ],
-  "oclif": {
-    "commands": "./lib/commands",
-    "topicSeparator": " ",
-    "topics": {
-      "releasedefinition": {
-        "description": "Commands around managing release definition"
-      },
-      "pool": {
-        "description": "Build and manage scratch org or sandbox pools"
-      },
-      "validate": {
-        "description": " Validate a change in your project repository"
-      },
-      "changelog": {
-        "description": "Track your artifacts & user stories as they progress through different environments, with release changelogs"
-      },
-      "artifacts": {
-        "description": "Manage artifacts for a project",
-        "external": true
-      },
-      "impact": {
-        "description": "Utilities to help you understand the impact of various components in sfp",
-        "external": true
-      },
-      "metrics": {
-        "description": "Report metrics to sfp supported metric providers",
-        "external": false
-      },
-      "apextests": {
-        "description": "Manage apex tests in a package or a org"
-      },
-      "repo": {
-        "description": "Manage your project repository"
-      },
-      "flow": {
-        "description": "Manage flows in your org"
-      },
-      "profile": {
-        "description": "Commands to manage profiles in your project or org"
-      },
-      "dependency": {
-        "description": "Manage the dependencies of a project",
-        "subtopics": {
-          "expand": {
-            "description": "Expand the dependency list in sfdx-project.json file for each package, fix the gap of dependencies from its dependent packages"
-          },
-          "shrink": {
-            "description": "Shrink the dependency list in sfdx-project.json file for each package, remove duplicate dependencies that already exist in its dependent packages"
-          },
-          "install": {
-            "description": "Install all the external dependencies of a given project"
-          }
-        }
-      }
+    "name": "@flxbl-io/sfp",
+    "description": "sfp is a CLI tool to help you manage your Salesforce projects in an artifact centric model",
+    "version": "39.6.1",
+    "license": "MIT",
+    "author": "flxblio",
+    "release": "August 25",
+    "bin": {
+        "sfp": "./bin/run",
+        "sfpowerscripts": "./bin/run"
     },
-    "plugins": [
-      "@oclif/plugin-help",
-      "@oclif/plugin-commands"
-    ]
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/flxbl-io/sfp.git",
-    "directory": "packages/sfp-cli"
-  },
-  "scripts": {
-    "prepare": "husky",
-    "watch": "npm run compile -- --watch",
-    "build": "npm run clean && npm run compile",
-    "docs": "oclif readme --no-aliases --multi --dir=docs --repository-prefix https://github.com/flxbl-io/sfp",
-    "manifest": "oclif manifest",
-    "clean": "rimraf ./lib && rimraf tsconfig.tsbuildinfo",
-    "compile": "tsc -b tsconfig.json",
-    "snyk-protect": "snyk protect",
-    "test": "cross-env FORCE_COLOR=true jest --silent --verbose --coverage --detectOpenHandles"
-  },
-  "snyk": true
+    "bugs": "https://github.com/flxbl-io/sfp/issues",
+    "publishConfig": {
+        "access": "public"
+    },
+    "dependencies": {
+        "@apexdevtools/apex-parser": "^4.0.0",
+        "@flxbl-io/apexlink": "4.0.1",
+        "@flxbl-io/sfdx-process-wrapper": "3.0.0",
+        "@flxbl-io/sfp-logger": "5.0.1",
+        "@flxbl-io/sfprofiles": "5.2.2",
+        "@jsforce/jsforce-node": "^3.2.0",
+        "@newrelic/telemetry-sdk": "^0.6.0",
+        "@oclif/core": "^4.5.2",
+        "@oclif/plugin-commands": "4.1.32",
+        "@oclif/plugin-help": "6.2.32",
+        "@salesforce/apex-node": "8.2.5",
+        "@salesforce/core": "8.19.0",
+        "@salesforce/kit": "3.2.3",
+        "@salesforce/packaging": "4.12.0",
+        "@salesforce/schemas": "1.9.0",
+        "@salesforce/source-deploy-retrieve": "12.21.5",
+        "@salesforce/source-tracking": "7.3.11",
+        "adm-zip": "^0.5.10",
+        "ajv": "8.15.0",
+        "antlr4ts": "0.5.0-alpha.4",
+        "async-retry": "^1.3.1",
+        "axios": "^1.7.4",
+        "bottleneck": "^2.19.5",
+        "chalk": "^4.1.2",
+        "cli-table": "0.3.11",
+        "datadog-metrics": "^0.9.3",
+        "dedent": "^1.5.1",
+        "dotenv": "16.3.1",
+        "fast-xml-parser": "4.5.0",
+        "fs-extra": "^11.1.1",
+        "git-url-parse": "^16.0.0",
+        "glob": "^10.3.3",
+        "handlebars": "^4.7.7",
+        "hot-shots": "^8.5.0",
+        "ignore": "^5.1.6",
+        "js-yaml": "^4.0.0",
+        "lodash": "^4.17.21",
+        "markdown-table": "^2.0.0",
+        "markdown-table-ts": "^1.0.3",
+        "marked": "4.0.16",
+        "marked-terminal": "5.1.1",
+        "neverthrow": "4.4.2",
+        "object-hash": "^2.1.1",
+        "pino": "8.21.0",
+        "pino-abstract-transport": "1.2.0",
+        "rimraf": "^5.0.1",
+        "semver": "7.6.2",
+        "simple-git": "3.19.1",
+        "tar": "^6.1.9",
+        "tmp": "^0.2.1",
+        "xml2js": "^0.6.0"
+    },
+    "devDependencies": {
+        "@babel/core": "7.18.2",
+        "@babel/plugin-proposal-nullish-coalescing-operator": "^7.17.12",
+        "@babel/plugin-proposal-optional-chaining": "7.17.12",
+        "@commitlint/cli": "^19.3.0",
+        "@commitlint/config-conventional": "^19.2.2",
+        "@jest/globals": "^29.6.1",
+        "@oclif/plugin-command-snapshot": "5.3.5",
+        "@oclif/test": "4.1.13",
+        "@salesforce/dev-config": "4.2.0",
+        "@salesforce/ts-sinon": "^1.4.22",
+        "@salesforce/ts-types": "2.0.10",
+        "@swc/core": "^1.10.14",
+        "@types/adm-zip": "^0.4.33",
+        "@types/fast-levenshtein": "0.0.4",
+        "@types/fs-extra": "11.0.4",
+        "@types/git-url-parse": "9.0.3",
+        "@types/jest": "^29.5.3",
+        "@types/js-yaml": "^4.0.5",
+        "@types/marked": "4.0.2",
+        "@types/semver": "7.5.8",
+        "cross-env": "^7.0.3",
+        "husky": "^9.0.11",
+        "jest": "^29.6.1",
+        "oclif": "^4.22.14",
+        "ts-jest": "29.1.5",
+        "ts-node": "10.9.2",
+        "ts-patch": "^3.2.0",
+        "ts-retry-promise": "0.8.1",
+        "typescript": "^5.4.5"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    },
+    "files": [
+        "/lib",
+        "/messages",
+        "/npm-shrinkwrap.json",
+        "/scripts",
+        "/resources",
+        "/oclif.manifest.json"
+    ],
+    "homepage": "https://github.com/flxbl-io/sfp",
+    "keywords": [
+        "flxblio",
+        "sfp-cli",
+        "sfdx",
+        "sfdx-plugin",
+        "salesforce",
+        "sf",
+        "sf-plugin",
+        "orchestrator"
+    ],
+    "oclif": {
+        "commands": "./lib/commands",
+        "topicSeparator": " ",
+        "topics": {
+            "releasedefinition": {
+                "description": "Commands around managing release definition"
+            },
+            "pool": {
+                "description": "Build and manage scratch org or sandbox pools"
+            },
+            "validate": {
+                "description": " Validate a change in your project repository"
+            },
+            "changelog": {
+                "description": "Track your artifacts & user stories as they progress through different environments, with release changelogs"
+            },
+            "artifacts": {
+                "description": "Manage artifacts for a project",
+                "external": true
+            },
+            "impact": {
+                "description": "Utilities to help you understand the impact of various components in sfp",
+                "external": true
+            },
+            "metrics": {
+                "description": "Report metrics to sfp supported metric providers",
+                "external": false
+            },
+            "apextests": {
+                "description": "Manage apex tests in a package or a org"
+            },
+            "repo": {
+                "description": "Manage your project repository"
+            },
+            "flow": {
+                "description": "Manage flows in your org"
+            },
+            "profile": {
+                "description": "Commands to manage profiles in your project or org"
+            },
+            "dependency": {
+                "description": "Manage the dependencies of a project",
+                "subtopics": {
+                    "expand": {
+                        "description": "Expand the dependency list in sfdx-project.json file for each package, fix the gap of dependencies from its dependent packages"
+                    },
+                    "shrink": {
+                        "description": "Shrink the dependency list in sfdx-project.json file for each package, remove duplicate dependencies that already exist in its dependent packages"
+                    },
+                    "install": {
+                        "description": "Install all the external dependencies of a given project"
+                    }
+                }
+            }
+        },
+        "plugins": [
+            "@oclif/plugin-help",
+            "@oclif/plugin-commands"
+        ]
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/flxbl-io/sfp.git",
+        "directory": "packages/sfp-cli"
+    },
+    "scripts": {
+        "prepare": "husky",
+        "watch": "npm run compile -- --watch",
+        "build": "npm run clean && npm run compile",
+        "docs": "oclif readme --no-aliases --multi --dir=docs --repository-prefix https://github.com/flxbl-io/sfp",
+        "manifest": "oclif manifest",
+        "clean": "rimraf ./lib && rimraf tsconfig.tsbuildinfo",
+        "compile": "tsc -b tsconfig.json",
+        "snyk-protect": "snyk protect",
+        "test": "cross-env FORCE_COLOR=true jest --silent --verbose --coverage --detectOpenHandles"
+    },
+    "snyk": true
 }

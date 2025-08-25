@@ -6,6 +6,7 @@ import SFPLogger, { LoggerLevel } from '@flxbl-io/sfp-logger';
 import { Messages } from '@salesforce/core';
 import SfpCommand from '../../SfpCommand';
 import { Flags, ux } from '@oclif/core';
+const Table = require('cli-table');
 import { loglevel, orgApiVersionFlagSfdxStyle, targetdevhubusername } from '../../flags/sfdxflags';
 
 // Initialize Messages with the current plugin directory
@@ -71,21 +72,21 @@ export default class List extends SfpCommand {
 
         if (!this.flags.json) {
             if (result.length > 0) {
-                ux.log(`======== Scratch org Details ========`);
+                ux.stdout(`======== Scratch org Details ========`);
 
                 if (!this.flags.tag) {
-                    ux.log(`List of all the pools in the org`);
+                    ux.stdout(`List of all the pools in the org`);
 
                     this.logTagCount(result);
-                    ux.log('===================================');
+                    ux.stdout('===================================');
                 }
 
                 if (this.flags.allscratchorgs) {
-                    ux.log(`Used Scratch Orgs in the pool: ${scratchOrgInuse.length}`);
+                    ux.stdout(`Used Scratch Orgs in the pool: ${scratchOrgInuse.length}`);
                 }
-                ux.log(`Unused Scratch Orgs in the Pool : ${scratchOrgNotInuse.length} \n`);
+                ux.stdout(`Unused Scratch Orgs in the Pool : ${scratchOrgNotInuse.length} \n`);
                 if (scratchOrgInProvision.length && scratchOrgInProvision.length > 0) {
-                    ux.log(`Scratch Orgs being provisioned in the Pool : ${scratchOrgInProvision.length} \n`);
+                    ux.stdout(`Scratch Orgs being provisioned in the Pool : ${scratchOrgInProvision.length} \n`);
                 }
 
                 if (this.flags.mypool) {
@@ -124,6 +125,12 @@ export default class List extends SfpCommand {
             });
         });
 
-        ux.table(tagArray, {'tag':{}, 'count':{}});
+        const table = new Table({
+            head: ['Tag', 'Count']
+        });
+        tagArray.forEach((item) => {
+            table.push([item.tag, item.count]);
+        });
+        ux.stdout(table.toString());
     }
 }

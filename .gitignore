@@ -27,3 +27,7 @@ packages/apexlink/tests/resources/feature-mgmt/apexlink.json
 .idea/
 .sfpowerscripts
 /tests/
+
+
+#Ignore vscode AI rules
+.github/instructions/codacy.instructions.md
