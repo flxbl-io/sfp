@@ -6,7 +6,7 @@ import SFPLogger, { LoggerLevel } from '@flxbl-io/sfp-logger';
 import { Messages } from '@salesforce/core';
 import SfpCommand from '../../SfpCommand';
 import { Flags, ux } from '@oclif/core';
-const Table = require('cli-table');
+import Table = require('cli-table');
 import { loglevel, orgApiVersionFlagSfdxStyle, targetdevhubusername } from '../../flags/sfdxflags';
 
 // Initialize Messages with the current plugin directory
@@ -72,21 +72,33 @@ export default class List extends SfpCommand {
 
         if (!this.flags.json) {
             if (result.length > 0) {
-                ux.stdout(`======== Scratch org Details ========`);
+                if (ux.stdout) {
+                    ux.stdout(`======== Scratch org Details ========`);
+                }
 
                 if (!this.flags.tag) {
-                    ux.stdout(`List of all the pools in the org`);
+                    if (ux.stdout) {
+                        ux.stdout(`List of all the pools in the org`);
+                    }
 
                     this.logTagCount(result);
-                    ux.stdout('===================================');
+                    if (ux.stdout) {
+                        ux.stdout('===================================');
+                    }
                 }
 
                 if (this.flags.allscratchorgs) {
-                    ux.stdout(`Used Scratch Orgs in the pool: ${scratchOrgInuse.length}`);
+                    if (ux.stdout) {
+                        ux.stdout(`Used Scratch Orgs in the pool: ${scratchOrgInuse.length}`);
+                    }
                 }
-                ux.stdout(`Unused Scratch Orgs in the Pool : ${scratchOrgNotInuse.length} \n`);
+                if (ux.stdout) {
+                    ux.stdout(`Unused Scratch Orgs in the Pool : ${scratchOrgNotInuse.length} \n`);
+                }
                 if (scratchOrgInProvision.length && scratchOrgInProvision.length > 0) {
-                    ux.stdout(`Scratch Orgs being provisioned in the Pool : ${scratchOrgInProvision.length} \n`);
+                    if (ux.stdout) {
+                        ux.stdout(`Scratch Orgs being provisioned in the Pool : ${scratchOrgInProvision.length} \n`);
+                    }
                 }
 
                 if (this.flags.mypool) {
@@ -128,9 +140,11 @@ export default class List extends SfpCommand {
         const table = new Table({
             head: ['Tag', 'Count']
         });
-        tagArray.forEach((item) => {
+        tagArray.forEach((item: any) => {
             table.push([item.tag, item.count]);
         });
-        ux.stdout(table.toString());
+        if (ux.stdout) {
+            ux.stdout(table.toString());
+        }
     }
 }

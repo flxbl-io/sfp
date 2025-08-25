@@ -14,7 +14,7 @@ import { COLOR_TIME } from '@flxbl-io/sfp-logger';
 import getFormattedTime from '../../core/utils/GetFormattedTime';
 import SfpCommand from '../../SfpCommand';
 import { Flags, ux } from '@oclif/core';
-const Table = require('cli-table');
+import Table = require('cli-table');
 import { loglevel, orgApiVersionFlagSfdxStyle, targetdevhubusername } from '../../flags/sfdxflags';
 
 // Initialize Messages with the current plugin directory
@@ -119,10 +119,12 @@ export default class Fetch extends SfpCommand {
             const table = new Table({
                 head: ['Key', 'Value']
             });
-            list.forEach((item) => {
+            list.forEach((item: any) => {
                 table.push([item.key, item.value]);
             });
-            ux.stdout(table.toString());
+            if (ux.stdout) {
+                ux.stdout(table.toString());
+            }
             this.printFetchSummary(!this.flags.nosourcetracking, Date.now() - fetchStartTime);
         }
 

@@ -80,6 +80,7 @@
         "@salesforce/ts-types": "2.0.10",
         "@swc/core": "^1.10.14",
         "@types/adm-zip": "^0.4.33",
+        "@types/cli-table": "^0.3.4",
         "@types/fast-levenshtein": "0.0.4",
         "@types/fs-extra": "11.0.4",
         "@types/git-url-parse": "9.0.3",
