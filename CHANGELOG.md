@@ -1,5 +1,12 @@
 # Changelog
 
+## [39.8.1](https://github.com/flxbl-io/sfp/compare/v39.8.0...v39.8.1) (2025-08-25)
+
+
+### Bug Fixes
+
+* **schema:** update typos in sfdx-project.schema.json ([cc39d24](https://github.com/flxbl-io/sfp/commit/cc39d24703c871bcae8a4e2bcb5be5286df960e5))
+
 ## [39.8.0](https://github.com/flxbl-io/sfp/compare/v39.7.0...v39.8.0) (2025-08-25)
 
 
