@@ -3,8 +3,7 @@ import * as rimraf from 'rimraf';
 import ProjectValidation from './ProjectValidation';
 import SFPLogger, { COLOR_HEADER, ConsoleLogger, LoggerLevel } from '@flxbl-io/sfp-logger';
 import GroupConsoleLogs from './ui/GroupConsoleLogs';
-import { Command, Flags, ux } from '@oclif/core';
-import { FlagOutput } from '@oclif/core/lib/interfaces/parser';
+import { Command, Flags, Interfaces, ux } from '@oclif/core';
 import { Org } from '@salesforce/core';
 
 
@@ -19,7 +18,7 @@ export default abstract class SfpCommand extends Command {
 
     protected hubOrg:Org;
     protected org:Org;
-    public flags: FlagOutput & { json: boolean; };
+    public flags: Interfaces.ParserOutput<any, any>['flags'] & { json?: boolean; };
 
    
     private isSfpowerkitFound: boolean;
@@ -38,6 +37,15 @@ export default abstract class SfpCommand extends Command {
      * Entry point of all commands
      */
     async run(): Promise<any> {
+        // Disable deprecation warnings
+        process.env.NO_DEPRECATION = '1';
+        
+        // Remove all existing warning listeners and add our own that logs to TRACE
+        process.removeAllListeners('warning');
+        process.on('warning', (warning) => {
+            SFPLogger.log(warning.stack ?? warning.toString(), LoggerLevel.TRACE);
+        });
+
         //Always enable color by default
         if (process.env.SFPOWERSCRIPTS_NOCOLOR) SFPLogger.disableColor();
         else SFPLogger.enableColor();
@@ -154,7 +162,7 @@ export default abstract class SfpCommand extends Command {
         SFPStatsSender.initializeLogBasedMetrics();
     }
 
-    private setLogLevel(flags:FlagOutput) {
+    private setLogLevel(flags:Interfaces.ParserOutput<any, any>['flags']) {
         if (flags.loglevel === 'trace' || flags.loglevel === 'TRACE') SFPLogger.logLevel = LoggerLevel.TRACE;
         else if (flags.loglevel === 'debug' || flags.loglevel === 'DEBUG')
             SFPLogger.logLevel = LoggerLevel.DEBUG;

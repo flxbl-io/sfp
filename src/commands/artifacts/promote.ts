@@ -6,6 +6,8 @@ import { ConsoleLogger } from '@flxbl-io/sfp-logger';
 import SfpPackageBuilder from '../../core/package/SfpPackageBuilder';
 import { PackageType } from '../../core/package/SfpPackage';
 import { Flags, ux } from '@oclif/core';
+import Table = require('cli-table');
+import { TableInstance } from '../../types/cli-table';
 import { loglevel, targetdevhubusername } from '../../flags/sfdxflags';
 import { LoggerLevel } from '@flxbl-io/sfp-logger';
 import { COLOR_HEADER } from '@flxbl-io/sfp-logger';
@@ -85,7 +87,16 @@ export default class Promote extends SfpCommand {
 
             // Print unpromoted packages with reason for failure
             if (unpromotedPackages.length > 0) {
-                ux.table(unpromotedPackages, { name: {}, error: {} });
+                const table: TableInstance = new Table({
+                    head: ['Name', 'Error']
+                }) as TableInstance;
+                unpromotedPackages.forEach((pkg: {name: string; error: string}) => {
+                    table.push([pkg.name, pkg.error]);
+                });
+                const output = table.toString();
+                if (typeof ux.stdout === 'function') {
+                    ux.stdout(output);
+                }
             }
 
             // Fail the task when an error occurs
