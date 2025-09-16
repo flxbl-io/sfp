@@ -25,6 +25,7 @@ import convertBuildNumDotDelimToHyphen from '../../core/utils/VersionNumberConve
 import ReleaseConfigLoader from '../release/ReleaseConfigLoader';
 import { Align, getMarkdownTable } from 'markdown-table-ts';
 import FileOutputHandler from '../../outputs/FileOutputHandler';
+import TransitiveDependencyResolver from '../../core/package/dependencies/TransitiveDependencyResolver';
 
 const Table = require('cli-table');
 const retry = require('async-retry');
@@ -133,7 +134,7 @@ export default class DeployImpl {
 
             SFPLogger.log('Artifacts' + JSON.stringify(packagesToPackageInfo), LoggerLevel.TRACE, this.props.logger);
 
-            queue = this.getPackagesToDeploy(sfdxProjectConfig, packagesToPackageInfo);
+            queue = await this.getPackagesToDeploy(sfdxProjectConfig, packagesToPackageInfo);
 
 
             SFPLogger.log('queue:' + JSON.stringify(queue), LoggerLevel.TRACE, this.props.logger);
@@ -853,12 +854,12 @@ export default class DeployImpl {
     }
 
     /**
-     * Returns the packages in the project config that have an artifact
+     * Returns the packages in the project config that have an artifact, sorted by dependency order
      */
-    private getPackagesToDeploy(
+    private async getPackagesToDeploy(
         sfdxProjectConfig: any,
         packagesToPackageInfo: { [p: string]: PackageInfo }
-    ): SfpPackage[] {
+    ): Promise<SfpPackage[]> {
         let packagesToDeploy: SfpPackage[] = [];
 
         let packages = sfdxProjectConfig['packageDirectories'];
@@ -886,8 +887,51 @@ export default class DeployImpl {
             else return true;
         });
 
+        // Sort packages by dependency order using TransitiveDependencyResolver
+        packagesToDeploy = await this.sortPackagesByDependencyOrder(packagesToDeploy, sfdxProjectConfig);
+
         return packagesToDeploy;
     }
+
+    /**
+     * Sorts packages by dependency order using TransitiveDependencyResolver
+     */
+    private async sortPackagesByDependencyOrder(packages: SfpPackage[], sfdxProjectConfig: any): Promise<SfpPackage[]> {
+        try {
+            // Check if there are any dependencies in the project config
+            const pkgWithDependencies = ProjectConfig.getAllPackagesAndItsDependencies(sfdxProjectConfig);
+            if (!Array.from(pkgWithDependencies.values()).some(deps => deps.length > 0)) {
+                SFPLogger.log(`No package dependencies found, using original order`, LoggerLevel.INFO, this.props.logger);
+                return packages;
+            }
+
+            // Use TransitiveDependencyResolver to get the proper dependency order
+            const resolver = new TransitiveDependencyResolver(sfdxProjectConfig, this.props.logger);
+            const resolvedDependencies = await resolver.resolveTransitiveDependencies();
+            
+            // Extract sorted package names from the resolved dependencies map
+            const sortedNames = Array.from(resolvedDependencies.keys());
+            
+            // Create package map and reorder packages
+            const packageMap = new Map(packages.map(pkg => [pkg.packageName, pkg]));
+            const sortedPackages = [
+                ...sortedNames.map(name => packageMap.get(name)).filter(Boolean),
+                ...packages.filter(pkg => !sortedNames.includes(pkg.packageName))
+            ];
+
+            SFPLogger.log(
+                `Dependency-aware order: ${sortedPackages.map(pkg => pkg.packageName).join(' -> ')}`,
+                LoggerLevel.INFO,
+                this.props.logger
+            );
+
+            return sortedPackages;
+        } catch (error) {
+            SFPLogger.log(`Dependency sort failed, using original order: ${error.message}`, LoggerLevel.WARN, this.props.logger);
+            return packages;
+        }
+    }
+
 }
 
 export interface PackageInfo {
