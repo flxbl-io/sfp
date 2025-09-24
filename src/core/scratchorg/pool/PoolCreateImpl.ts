@@ -70,7 +70,7 @@ export default class PoolCreateImpl extends PoolBaseImpl {
         try {
             SFPLogger.log(COLOR_KEY_MESSAGE('Computing Allocation..'), LoggerLevel.INFO);
             try {
-                this.totalToBeAllocated = await this.computeAllocation();
+                this.totalToBeAllocated = Math.min(await this.computeAllocation(), this.pool.batchSize);
             } catch (error) {
                 return err({
                     success: 0,
