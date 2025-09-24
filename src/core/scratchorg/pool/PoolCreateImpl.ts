@@ -160,8 +160,10 @@ export default class PoolCreateImpl extends PoolBaseImpl {
     ) {
         pool.current_allocation = countOfActiveScratchOrgs;
         pool.to_allocate = 0;
-        pool.to_satisfy_max =
-            pool.maxAllocation - pool.current_allocation > 0 ? pool.maxAllocation - pool.current_allocation : 0;
+        pool.to_satisfy_max = Math.min(
+            pool.maxAllocation - pool.current_allocation > 0 ? pool.maxAllocation - pool.current_allocation : 0,
+            pool.batchSize
+        );
 
         if (pool.snapshotPool && pool.to_satisfy_max > 0){
             pool.to_allocate = pool.to_satisfy_max;
