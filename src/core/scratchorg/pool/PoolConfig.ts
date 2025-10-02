@@ -6,6 +6,7 @@ export interface PoolConfig {
     waitTime?: number;
     expiry?: number;
     batchSize?: number;
+    allocateSingleBatch?: boolean;
     configFilePath: string;
     releaseConfigFile?:string;
     succeedOnDeploymentErrors?: boolean;

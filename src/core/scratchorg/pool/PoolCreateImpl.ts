@@ -160,10 +160,7 @@ export default class PoolCreateImpl extends PoolBaseImpl {
     ) {
         pool.current_allocation = countOfActiveScratchOrgs;
         pool.to_allocate = 0;
-        pool.to_satisfy_max = Math.min(
-            pool.maxAllocation - pool.current_allocation > 0 ? pool.maxAllocation - pool.current_allocation : 0,
-            pool.batchSize
-        );
+        pool.to_satisfy_max = pool.maxAllocation - pool.current_allocation > 0 ? pool.maxAllocation - pool.current_allocation : 0;
 
         if (pool.snapshotPool && pool.to_satisfy_max > 0){
             pool.to_allocate = pool.to_satisfy_max;
@@ -171,6 +168,10 @@ export default class PoolCreateImpl extends PoolBaseImpl {
             pool.to_allocate = pool.to_satisfy_max;
         } else if (pool.to_satisfy_max > 0 && pool.to_satisfy_max > remainingScratchOrgs) {
             pool.to_allocate = remainingScratchOrgs;
+        }
+
+        if (pool.allocateSingleBatch) {
+            pool.to_allocate = pool.to_allocate > pool.batchSize ? pool.batchSize : pool.to_allocate;
         }
 
         SFPLogger.log(
