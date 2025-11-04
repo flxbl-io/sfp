@@ -46,22 +46,23 @@ export default class ClientSourceTracking {
             project: project,
         });
 
-        tracking.resetRemoteTracking();
+        await tracking.resetRemoteTracking();
+        await tracking.ensureLocalTracking();
     }
 
     /**
      * Create local source tracking from sfp artifacts installed in scratch org
      */
     private async createLocalSourceTracking() {
-        
         let git;
         try {
             git = await Git.initiateRepoAtTempLocation(this.logger);
 
             const sfpArtifacts = await this.org.getInstalledArtifacts();
 
-            if(sfpArtifacts.length==0)
-             throw new Error(`Unable to find any artifacts in the org`);
+            if (sfpArtifacts.length == 0) {
+                throw new Error(`Unable to find any artifacts in the org`);
+            }
 
             //clean up MPD to just one package, so that source tracking lib
             //does do a full scan and break
@@ -75,13 +76,7 @@ export default class ClientSourceTracking {
                 project: project,
             });
 
-           
-
-            SFPLogger.log(
-                `Total Artifacts to Analyze: ${sfpArtifacts.length}`,
-                LoggerLevel.INFO,
-                this.logger
-            );
+            SFPLogger.log(`Total Artifacts to Analyze: ${sfpArtifacts.length}`, LoggerLevel.INFO, this.logger);
 
             let count = 1;
             for (const artifact of sfpArtifacts) {
@@ -93,7 +88,7 @@ export default class ClientSourceTracking {
                 );
                 SFPLogger.log(`Analyzing package ${COLOR_KEY_MESSAGE(artifact.Name)}`, LoggerLevel.INFO, this.logger);
                 // Checkout version of source code from which artifact was created
-                await git.checkout(artifact.CommitId__c,true)
+                await git.checkout(artifact.CommitId__c, true);
 
                 SFPLogger.log(
                     `Version pushed while preparing this org is ${artifact.Version__c} with SHA ${artifact.CommitId__c}`,
@@ -138,20 +133,19 @@ export default class ClientSourceTracking {
                         );
                     } else SFPLogger.log(`Encountered data package... skipping`, LoggerLevel.INFO, this.logger);
                 } catch (error) {
-                    if(error.message.includes)
-                    {
-                    SFPLogger.log(
-                        ` sfp is unable to sync the package ${artifact.name}${EOL}, 
+                    if (error.message.includes) {
+                        SFPLogger.log(
+                            ` sfp is unable to sync the package ${artifact.Name}${EOL},
                           as it not able to find the find equivalent git references`,
-                        LoggerLevel.ERROR,
-                        this.logger);
-                    }
-                    else    
-                    SFPLogger.log(
-                        `Unable to update local source tracking due to ${error.message}`,
-                        LoggerLevel.INFO,
-                        this.logger
-                    );
+                            LoggerLevel.ERROR,
+                            this.logger
+                        );
+                    } else
+                        SFPLogger.log(
+                            `Unable to update local source tracking due to ${error.message}`,
+                            LoggerLevel.INFO,
+                            this.logger
+                        );
                     SFPLogger.log(`Skipping package.. ${artifact.Name}`, LoggerLevel.WARN, this.logger);
                 }
                 count++;
@@ -166,25 +160,20 @@ export default class ClientSourceTracking {
                 path.join(this.sfdxOrgIdDir, 'localSourceTracking')
             );
         } catch (error) {
-
-            if(error.message.includes(`reference is not a tree`))
-            {
+            if (error.message.includes(`reference is not a tree`)) {
                 SFPLogger.log(
-                    `sfp is unable to sync this repository, 
+                    `sfp is unable to sync this repository,
                      as it not able to find the matching git references${EOL}
                      Are you sure this pool was created from the same repository?`,
                     LoggerLevel.ERROR,
-                    this.logger);
-            }
-            else
-            SFPLogger.log(
-                `Unable to update local source tracking due to ${error.message}`,
-                LoggerLevel.ERROR,
-                this.logger
-            );
+                    this.logger
+                );
+            } else
+                SFPLogger.log(`Unable to update local source tracking due to ${error}`, LoggerLevel.ERROR, this.logger);
         } finally {
-            if(git)
-              git.deleteTempoRepoIfAny();
+            if (git) {
+                git.deleteTempoRepoIfAny();
+            }
         }
     }
 

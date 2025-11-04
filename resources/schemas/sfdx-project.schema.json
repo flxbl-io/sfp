@@ -933,10 +933,10 @@
             }
         },
         "packageDirectory.aliasfy": {
-            "type": "boolean",
-            "title": "Aliasfy the package",
-            "description": "Deploy a subfolder in a source package that matches the alias of the org"
-        },
+                    "type": "boolean",
+                    "title": "Aliasfy the package",
+                    "description": "Deploy a subfolder in a source package that matches the alias of the org"
+                },
         "packageDirectory.alwaysDeploy": {
             "type": "boolean",
             "title": "Always deploy the package",
@@ -1069,6 +1069,12 @@
             "title": "Enable Field History Tracking support?",
             "description": "Enable automated update of field history tracking in the target org upon deployment"
         },
+        "packageDirectory.enableFT": {
+            "type": "boolean",
+            "default": true,
+            "title": "Enable Field  Tracking support?",
+            "description": "Enable automated update of field  tracking in the target org upon deployment"
+        },
         "packageDirectory.enableFlowActivation": {
             "type": "boolean",
             "default": true,
@@ -1144,7 +1150,7 @@
                     }
                 },
                 "disableEntitlementFilter": {
-                    "title": "Disable Entitlment filter",
+                    "title": "Disable Entitlement filter",
                     "type": "boolean",
                     "description": "Disable Entitlement filtering in source package,which skips entitlements that are already in the target org",
                     "default": false

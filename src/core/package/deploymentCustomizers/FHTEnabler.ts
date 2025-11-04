@@ -1,5 +1,5 @@
 import SFPLogger, { Logger, LoggerLevel } from '@flxbl-io/sfp-logger';
-import { ComponentSet, registry } from '@salesforce/source-deploy-retrieve';
+import { ComponentSet } from '@salesforce/source-deploy-retrieve';
 import * as fs from 'fs-extra';
 import QueryHelper from '../../queryHelper/QueryHelper';
 import SfpPackage from '../SfpPackage';
@@ -19,7 +19,7 @@ const QUERY_BODY =
 
 export default class FHTEnabler extends MetdataDeploymentCustomizer {
 
-    public async isEnabled(sfpPackage: SfpPackage, conn: Connection<Schema>, logger: Logger): Promise<boolean> {
+    public async isEnabled(sfpPackage: SfpPackage, conn: Connection<Schema>, _logger: Logger): Promise<boolean> {
         //ignore if its a scratch org
         const orgDetails = await new OrgDetailsFetcher(conn.getUsername()).getOrgDetails();
         if (orgDetails.isScratchOrg) return false;
@@ -53,8 +53,8 @@ export default class FHTEnabler extends MetdataDeploymentCustomizer {
         logger: Logger
     ): Promise<{ location: string; componentSet: ComponentSet }> {
         //First retrieve all objects/fields  of interest from the package
-        let objList = [];
-        let fieldList = [];
+        let objList: string[] = [];
+        let fieldList: string[] = [];
         Object.keys(sfpPackage['fhtFields']).forEach((key) => {
             objList.push(`'${key}'`);
             sfpPackage['fhtFields'][key].forEach((field) => fieldList.push(key + '.' + field));
@@ -88,22 +88,27 @@ export default class FHTEnabler extends MetdataDeploymentCustomizer {
             let sfpOrg = await SFPOrg.create({ connection: conn });
             let fetchedCustomFields = await customFieldFetcher.getCustomFields(sfpOrg, fieldList);
 
-
-
             //Modify the component set
             //Parsing is risky due to various encoding, so do an inplace replacement
             let sourceComponents = fetchedCustomFields.components.getSourceComponents().toArray();
             for (const sourceComponent of sourceComponents) {
-                let metadataOfComponent = fs.readFileSync(sourceComponent.xml).toString();
+                // for each object
+                for (const childComponent of sourceComponent.getChildren()) {
+                    // for each child metadata
+                    if (childComponent.type.name !== 'CustomField') {
+                        // skip if not a custom field
+                        continue;
+                    }
 
-                metadataOfComponent = metadataOfComponent.replace(
-                    '<trackHistory>false</trackHistory>',
-                    '<trackHistory>true</trackHistory>'
-                );
+                    let metadataOfComponent = fs.readFileSync(childComponent.xml).toString();
 
+                    metadataOfComponent = metadataOfComponent.replace(
+                        '<trackHistory>false</trackHistory>',
+                        '<trackHistory>true</trackHistory>'
+                    );
 
-
-                fs.writeFileSync(path.join(sourceComponent.xml), metadataOfComponent);
+                    fs.writeFileSync(path.join(childComponent.xml), metadataOfComponent);
+                }
             }
 
             return { location: fetchedCustomFields.location, componentSet: fetchedCustomFields.components };
@@ -115,8 +120,3 @@ export default class FHTEnabler extends MetdataDeploymentCustomizer {
     }
 }
 
-interface CustomField {
-    QualifiedApiName: string;
-    IsFieldHistoryTracked: boolean;
-    EntityDefinitionId: string;
-}

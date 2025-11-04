@@ -1,11 +1,12 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 
-ARG SF_CLI_VERSION=2.46.6
-ARG BROWSERFORCE_VERSION=4.0.0
-ARG SFDMU_VERSION=4.32.2
+ARG SF_CLI_VERSION=2.100.4
+ARG BROWSERFORCE_VERSION=5.0.0
+ARG SFDMU_VERSION=4.38.0
 ARG GIT_COMMIT
-ARG NODE_MAJOR=18
+ARG NODE_MAJOR=22
+ARG SFP_VERSION
 
 LABEL org.opencontainers.image.description "sfp is a build system for modular development in Salesforce."
 LABEL org.opencontainers.image.licenses "MIT"
@@ -14,7 +15,7 @@ LABEL org.opencontainers.image.documentation "https://docs.flxbl.io/sfp"
 LABEL org.opencontainers.image.revision $GIT_COMMIT
 LABEL org.opencontainers.image.vendor "Flxbl"
 LABEL org.opencontainers.image.source "https://github.com/flxbl-io/sfp"
-LABEL org.opencontainers.image.title "Flxbl sfp docker image - June 24"
+LABEL org.opencontainers.image.title "Flxbl sfp docker image - December 24"
 
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -23,46 +24,64 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN ln -sf bash /bin/sh
 
 
-RUN apt-get update \
-    && apt-get upgrade -y \
-    && apt-get -y install --no-install-recommends \
-      git \
-      curl \
-      sudo \
-      jq \
-      zip \
-      unzip \
-      make \
-      g++ \
-      tzdata \
-      openjdk-17-jre-headless \
-      ca-certificates \
-	  libxkbcommon-x11-0 libdigest-sha-perl  libxshmfence-dev \
-       gconf-service libappindicator1 libasound2 libatk1.0-0 \
-       libatk-bridge2.0-0 libcairo-gobject2 libdrm2 libgbm1 libgconf-2-4 \
-       libgtk-3-0 libnspr4 libnss3 libx11-xcb1 libxcb-dri3-0 libxcomposite1 libxcursor1 \
-       libxdamage1 libxfixes3 libxi6 libxinerama1 libxrandr2 libxshmfence1 libxss1 libxtst6 \
-       fonts-liberation fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf \
-      chromium-bsu \
-      chromium-driver \
-      gnupg \
-    && apt-get autoremove --assume-yes \
-    && apt-get clean --assume-yes \
-    && rm -rf /var/lib/apt/list/*
+RUN apt-get update && \
+    apt-get -y install --no-install-recommends \
+    jq \
+    zip \
+    unzip \
+    curl \
+    wget \
+    git \
+    tzdata \
+    openjdk-21-jre-headless \
+    libgtk2.0-0t64 \
+    libgtk-3-0t64 \
+    libgbm-dev \
+    libnotify-dev \
+    libnss3 \
+    libxss1 \
+    libasound2t64 \
+    libxtst6 \
+    xauth \
+    xvfb \
+    fonts-ipafont-gothic \
+    fonts-wqy-zenhei \
+    fonts-thai-tlwg \
+    fonts-khmeros \
+    fonts-kacst \
+    fonts-freefont-ttf \
+    dbus \
+    dbus-x11 \
+    chromium-bsu \
+    chromium-driver && \
+    apt-get autoremove -y && \
+    apt-get clean -y && \
+    rm -rf /var/lib/apt/lists/*
 
 # Set timezone to UTC
 ENV TZ=UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# install nodejs via nodesource
-RUN mkdir -p /etc/apt/keyrings \
+# Install Node.js and build dependencies in one layer
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get -y install --no-install-recommends \
+      make \
+      ca-certificates \
+      gcc-14 g++-14 \
+      gnupg \
+    && mkdir -p /etc/apt/keyrings \
     && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
     && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
     && apt-get update \
     && apt-get -y install --no-install-recommends nodejs \
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100 \
+       --slave /usr/bin/g++ g++ /usr/bin/g++-14 \
+       --slave /usr/bin/gcov gcov /usr/bin/gcov-14 \
+    && ln -s /usr/bin/gcc /usr/bin/cc \
     && apt-get autoremove --assume-yes \
     && apt-get clean --assume-yes \
-    && rm -rf /var/lib/apt/list/*    
+    && rm -rf /var/lib/apt/lists/* 
 
 # install yarn
 RUN npm install --global yarn --omit-dev \
@@ -71,7 +90,7 @@ RUN npm install --global yarn --omit-dev \
 # Install SF cli and sfpowerscripts
 RUN npm install --global --omit=dev \
     @salesforce/cli@${SF_CLI_VERSION} \
-    @flxbl-io/sfp@${SFPOWERSCRIPTS_VERSION} \
+    @flxbl-io/sfp@${SFP_VERSION} \
     && npm cache clean --force
 
 
@@ -82,7 +101,7 @@ RUN npm install --global --omit=dev \
 ENV XDG_DATA_HOME=/sf_plugins/.local/share \
     XDG_CONFIG_HOME=/sf_plugins/.config  \
     XDG_CACHE_HOME=/sf_plugins/.cache \
-    JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/ \
+    JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64/ \
     PUPPETEER_CACHE_DIR=/root/.cache/puppeteer
 
 
@@ -104,8 +123,7 @@ RUN mkdir -p $XDG_DATA_HOME && \
 # Install sfdx plugins
 RUN echo 'y' | sf plugins:install sfdx-browserforce-plugin@${BROWSERFORCE_VERSION} \
     && echo 'y' | sf plugins:install sfdmu@${SFDMU_VERSION} \
-    && echo 'y' | sf plugins:install @salesforce/plugin-signups@1.5.0 \
-    && echo 'y' | sf plugins:install @salesforce/sfdx-scanner@3.16.0 \
+    && echo 'y' | sf plugins:install @salesforce/sfdx-scanner@4.7.0 \
     && yarn cache clean --all 
 
 # Set some sane behaviour in container

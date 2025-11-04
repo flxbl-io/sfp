@@ -87,7 +87,19 @@ export default class SfpPackageInquirer {
         let remoteURL: gitUrlParse.GitUrl;
 
         for (let sfpPackage of this.sfpPackages) {
-            let currentRemoteURL = gitUrlParse(sfpPackage.repository_url);
+            let currentRemoteURL: gitUrlParse.GitUrl;
+
+            try {
+                currentRemoteURL = gitUrlParse(sfpPackage.repository_url);
+            } catch (ex) {
+                if (ex instanceof Error && ex.message === 'URL parsing failed.') {
+                    throw new Error(
+                        `Invalid repository URL for package '${sfpPackage.package_name}': ${sfpPackage.repository_url}`
+                    );
+                } else {
+                    throw ex;
+                }
+            }
 
             if (remoteURL == null) {
                 remoteURL = currentRemoteURL;

@@ -17,7 +17,7 @@ const QUERY_BODY =
     'SELECT QualifiedApiName, EntityDefinition.QualifiedApiName  FROM FieldDefinition WHERE IsFeedEnabled = true AND EntityDefinitionId IN ';
 
 export default class FTEnabler extends MetdataDeploymentCustomizer {
-    public async isEnabled(sfpPackage: SfpPackage, conn: Connection<Schema>, logger: Logger): Promise<boolean> {
+    public async isEnabled(sfpPackage: SfpPackage, conn: Connection<Schema>, _logger: Logger): Promise<boolean> {
         //ignore if its a scratch org
         const orgDetails = await new OrgDetailsFetcher(conn.getUsername()).getOrgDetails();
         if (orgDetails.isScratchOrg) return false;
@@ -49,8 +49,8 @@ export default class FTEnabler extends MetdataDeploymentCustomizer {
         logger: Logger
     ): Promise<{ location: string; componentSet: ComponentSet }> {
         //First retrieve all objects/fields  of interest from the package
-        let objList = [];
-        let fieldList = [];
+        let objList: string[] = [];
+        let fieldList: string[] = [];
         Object.keys(sfpPackage['ftFields']).forEach((key) => {
             objList.push(`'${key}'`);
             sfpPackage['ftFields'][key].forEach((field) => fieldList.push(key + '.' + field));
@@ -87,14 +87,23 @@ export default class FTEnabler extends MetdataDeploymentCustomizer {
             //Modify the component set
             //Parsing is risky due to various encoding, so do an inplace replacement
             for (const sourceComponent of fetchedCustomFields.components.getSourceComponents()) {
-                let metadataOfComponent = fs.readFileSync(sourceComponent.xml).toString();
+                 // for each object
+                 for (const childComponent of sourceComponent.getChildren()) {
+                    // for each child metadata
+                    if (childComponent.type.name !== 'CustomField') {
+                        // skip if not a custom field
+                        continue;
+                    }
 
-                metadataOfComponent = metadataOfComponent.replace(
-                    '<trackFeedHistory>false</trackFeedHistory>',
-                    '<trackFeedHistory>true</trackFeedHistory>'
-                );
+                    let metadataOfComponent = fs.readFileSync(childComponent.xml).toString();
 
-                fs.writeFileSync(path.join(sourceComponent.xml), metadataOfComponent);
+                    metadataOfComponent = metadataOfComponent.replace(
+                        '<trackFeedHistory>false</trackFeedHistory>',
+                        '<trackFeedHistory>true</trackFeedHistory>'
+                    );
+
+                    fs.writeFileSync(path.join(childComponent.xml), metadataOfComponent);
+                }
             }
 
             return { location: fetchedCustomFields.location, componentSet: fetchedCustomFields.components };

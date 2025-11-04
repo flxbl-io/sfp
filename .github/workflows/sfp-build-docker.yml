@@ -88,7 +88,7 @@ jobs:
           tags: |
               ghcr.io/${{ inputs.repo }}/${{ inputs.image }}:${{ env.PKG_VERSION }}-${{ inputs.suffix-tag }}
           build-args: | 
-                  SFPOWERSCRIPTS_VERSION=${{ env.PKG_VERSION }}
+                  SFP_VERSION=${{ env.PKG_VERSION }}
                   GIT_COMMIT=${{ github.sha}}
 
 

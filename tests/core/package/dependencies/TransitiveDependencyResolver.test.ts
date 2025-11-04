@@ -82,7 +82,7 @@ describe("Given a TransitiveDependencyResolver", () => {
     const resolvedDependencies = await transitiveDependencyResolver.resolveTransitiveDependencies();
     
     let dependencies =  resolvedDependencies.get('quote-management');
-    expect(dependencies?.find(dependency => dependency.package === "core")?.versionNumber).toBe("1.0.0.LATEST");
+    expect(dependencies?.find(dependency => dependency.package === "core")?.versionNumber).toBe("1.2.0.LATEST");
   
   });
 
@@ -99,6 +99,362 @@ describe("Given a TransitiveDependencyResolver", () => {
     let externalDependencyIndex = resolvedDependencies.get('contact-management')?.findIndex(dependency => dependency.package === "sfdc-framework");
     expect(externalDependencyIndex).toBe(3);
 
+  });
+
+  it("should resolve with a higher version of a given package if a higher version is specified", async () => {
+    // Setup project config with three packages and their dependencies
+    const complexProjectConfig = {
+      packageDirectories: [
+        {
+          package: "package-a",
+          versionNumber: "1.1.0.NEXT",
+          dependencies: []
+        },
+        {
+          package: "package-b",
+          versionNumber: "2.0.0.NEXT",
+          dependencies: [
+            {
+              package: "package-a",
+              versionNumber: "1.0.0.LATEST"
+            }
+          ]
+        },
+        {
+          package: "package-c",
+          versionNumber: "1.0.0.NEXT",
+          dependencies: [
+            {
+              package: "package-b",
+              versionNumber: "2.0.0.LATEST"
+            },
+            {
+              package: "package-a",
+              versionNumber: "1.1.0.LATEST"
+            }
+          ]
+        }
+      ]
+    };
+
+    const transitiveDependencyResolver = new TransitiveDependencyResolver(complexProjectConfig);
+    const resolvedDependencies = await transitiveDependencyResolver.resolveTransitiveDependencies();
+    
+    // Get dependencies for package-c
+    const packageCDeps = resolvedDependencies.get('package-c');
+    
+    // Verify package-a appears only once and with the higher version
+    const packageADeps = packageCDeps?.filter(dep => dep.package === 'package-a');
+    expect(packageADeps?.length).toBe(1);
+    expect(packageADeps?.[0].versionNumber).toBe('1.1.0.LATEST');
+    
+    // Verify package-b is included
+    const packageBDep = packageCDeps?.find(dep => dep.package === 'package-b');
+    expect(packageBDep).toBeTruthy();
+    expect(packageBDep?.versionNumber).toBe('2.0.0.LATEST');
+    
+    // Verify the order: package-a should come before package-b due to dependency chain
+    const packageAIndex = packageCDeps?.findIndex(dep => dep.package === 'package-a');
+    const packageBIndex = packageCDeps?.findIndex(dep => dep.package === 'package-b');
+    expect(packageAIndex).toBeLessThan(packageBIndex!);
+  });
+
+  it("should handle build number versions correctly", async () => {
+    const buildNumberConfig = {
+      packageDirectories: [
+        {
+          package: "package-a",
+          versionNumber: "1.0.0.5",
+          dependencies: []
+        },
+        {
+          package: "package-b",
+          versionNumber: "1.0.0.NEXT",
+          dependencies: [
+            {
+              package: "package-a",
+              versionNumber: "1.0.0.3"
+            }
+          ]
+        }
+      ]
+    };
+
+    const resolver = new TransitiveDependencyResolver(buildNumberConfig);
+    const resolvedDeps = await resolver.resolveTransitiveDependencies();
+    const packageBDeps = resolvedDeps.get('package-b');
+    
+    // Should use the higher build number
+    const packageADep = packageBDeps?.find(dep => dep.package === 'package-a');
+    expect(packageADep?.versionNumber).toBe('1.0.0.3');
+  });
+
+  it("should handle missing version numbers gracefully", async () => {
+    const missingVersionConfig = {
+      packageDirectories: [
+        {
+          package: "package-a",
+          versionNumber: "1.0.0.NEXT",
+          dependencies: []
+        },
+        {
+          package: "package-b",
+          versionNumber: "1.0.0.NEXT",
+          dependencies: [
+            {
+              package: "package-a"
+              // No version number specified
+            }
+          ]
+        }
+      ]
+    };
+
+    const resolver = new TransitiveDependencyResolver(missingVersionConfig);
+    const resolvedDeps = await resolver.resolveTransitiveDependencies();
+    const packageBDeps = resolvedDeps.get('package-b');
+    
+    // Should not throw and should include the dependency
+    expect(packageBDeps?.find(dep => dep.package === 'package-a')).toBeTruthy();
+  });
+
+  it("should respect specified dependency versions", async () => {
+    const buildNumberConfig = {
+      packageDirectories: [
+        {
+          package: "package-a",
+          versionNumber: "1.0.0.5",  // Package A is on version 5
+          dependencies: []
+        },
+        {
+          package: "package-b",
+          versionNumber: "1.0.0.NEXT",
+          dependencies: [
+            {
+              package: "package-a",
+              versionNumber: "1.0.0.3"  // But package B depends on version 3
+            }
+          ]
+        }
+      ]
+    };
+
+    const resolver = new TransitiveDependencyResolver(buildNumberConfig);
+    const resolvedDeps = await resolver.resolveTransitiveDependencies();
+    const packageBDeps = resolvedDeps.get('package-b');
+    
+    // Should use the specified dependency version
+    const packageADep = packageBDeps?.find(dep => dep.package === 'package-a');
+    expect(packageADep?.versionNumber).toBe('1.0.0.3');
+  });
+
+  it("should throw error on circular dependencies", async () => {
+    const circularConfig = {
+      packageDirectories: [
+        {
+          package: "package-a",
+          versionNumber: "1.0.0.NEXT",
+          dependencies: [
+            {
+              package: "package-b",
+              versionNumber: "1.0.0.LATEST"
+            }
+          ]
+        },
+        {
+          package: "package-b",
+          versionNumber: "1.0.0.NEXT",
+          dependencies: [
+            {
+              package: "package-a",
+              versionNumber: "1.0.0.LATEST"
+            }
+          ]
+        }
+      ]
+    };
+
+    const resolver = new TransitiveDependencyResolver(circularConfig);
+    
+    // Should throw error due to circular dependency
+    await expect(resolver.resolveTransitiveDependencies()).rejects.toThrow(/Circular dependency detected.*package-a -> package-b -> package-a/);
+  });
+
+  it("should handle deep transitive dependencies", async () => {
+    const deepConfig = {
+      packageDirectories: [
+        {
+          package: "package-a",
+          versionNumber: "1.0.0.NEXT",
+          dependencies: []
+        },
+        {
+          package: "package-b",
+          versionNumber: "1.0.0.NEXT",
+          dependencies: [
+            {
+              package: "package-a",
+              versionNumber: "1.0.0.LATEST"
+            }
+          ]
+        },
+        {
+          package: "package-c",
+          versionNumber: "1.0.0.NEXT",
+          dependencies: [
+            {
+              package: "package-b",
+              versionNumber: "1.0.0.LATEST"
+            }
+          ]
+        },
+        {
+          package: "package-d",
+          versionNumber: "1.0.0.NEXT",
+          dependencies: [
+            {
+              package: "package-c",
+              versionNumber: "1.0.0.LATEST"
+            }
+          ]
+        }
+      ]
+    };
+
+    const resolver = new TransitiveDependencyResolver(deepConfig);
+    const resolvedDeps = await resolver.resolveTransitiveDependencies();
+    const packageDDeps = resolvedDeps.get('package-d');
+    
+    // Should include all transitive dependencies
+    expect(packageDDeps?.find(dep => dep.package === 'package-a')).toBeTruthy();
+    expect(packageDDeps?.find(dep => dep.package === 'package-b')).toBeTruthy();
+    expect(packageDDeps?.find(dep => dep.package === 'package-c')).toBeTruthy();
+    
+    // Should maintain correct order
+    const aIndex = packageDDeps?.findIndex(dep => dep.package === 'package-a');
+    const bIndex = packageDDeps?.findIndex(dep => dep.package === 'package-b');
+    const cIndex = packageDDeps?.findIndex(dep => dep.package === 'package-c');
+    
+    expect(aIndex).toBeLessThan(bIndex!);
+    expect(bIndex).toBeLessThan(cIndex!);
+  });
+
+  it("should return detailed dependency information with direct and transitive dependencies", async () => {
+    const config = {
+      packageDirectories: [
+        {
+          package: "package-a",
+          versionNumber: "1.0.0.NEXT",
+          dependencies: []
+        },
+        {
+          package: "package-b",
+          versionNumber: "2.0.0.NEXT",
+          dependencies: [
+            {
+              package: "package-a",
+              versionNumber: "1.0.0.LATEST"
+            }
+          ]
+        },
+        {
+          package: "package-c",
+          versionNumber: "1.0.0.NEXT",
+          dependencies: [
+            {
+              package: "package-b",
+              versionNumber: "2.0.0.LATEST"
+            }
+          ]
+        }
+      ]
+    };
+
+    const resolver = new TransitiveDependencyResolver(config);
+    const result = await resolver.resolveTransitiveDependenciesWithDetails();
+    
+    // Verify structure
+    expect(result.resolvedDependencies).toBeDefined();
+    expect(result.details).toBeDefined();
+
+    // Check package-c details
+    const packageCDetails = result.details.get('package-c');
+    expect(packageCDetails).toBeDefined();
+    
+    // Verify package-b is a direct dependency of package-c
+    expect(packageCDetails?.['package-b']).toEqual({
+      version: '2.0.0.LATEST',
+      isDirect: true,
+      contributors: ['package-c']  // The package itself is tracked as a contributor
+    });
+
+    // Verify package-a is a transitive dependency via package-b
+    expect(packageCDetails?.['package-a']).toEqual({
+      version: '1.0.0.LATEST',
+      isDirect: false,
+      contributors: ['package-b']
+    });
+  });
+
+  it("should track multiple contributors for shared dependencies", async () => {
+    const config = {
+      packageDirectories: [
+        {
+          package: "shared-dep",
+          versionNumber: "1.0.0.NEXT",
+          dependencies: []
+        },
+        {
+          package: "package-a",
+          versionNumber: "1.0.0.NEXT",
+          dependencies: [
+            {
+              package: "shared-dep",
+              versionNumber: "1.0.0.LATEST"
+            }
+          ]
+        },
+        {
+          package: "package-b",
+          versionNumber: "1.0.0.NEXT",
+          dependencies: [
+            {
+              package: "shared-dep",
+              versionNumber: "1.0.0.LATEST"
+            }
+          ]
+        },
+        {
+          package: "root-package",
+          versionNumber: "1.0.0.NEXT",
+          dependencies: [
+            {
+              package: "package-a",
+              versionNumber: "1.0.0.LATEST"
+            },
+            {
+              package: "package-b",
+              versionNumber: "1.0.0.LATEST"
+            }
+          ]
+        }
+      ]
+    };
+
+    const resolver = new TransitiveDependencyResolver(config);
+    const result = await resolver.resolveTransitiveDependenciesWithDetails();
+    
+    const rootDetails = result.details.get('root-package');
+    expect(rootDetails).toBeDefined();
+
+    // Verify shared-dep has both package-a and package-b as contributors
+    const sharedDepDetails = rootDetails?.['shared-dep'];
+    expect(sharedDepDetails).toBeDefined();
+    expect(sharedDepDetails?.isDirect).toBe(false);
+    expect(sharedDepDetails?.version).toBe('1.0.0.LATEST');
+    expect(sharedDepDetails?.contributors).toContain('package-a');
+    expect(sharedDepDetails?.contributors).toContain('package-b');
+    expect(sharedDepDetails?.contributors.length).toBe(2);
   });
 
   function verifyUniquePkgs(arr) {
@@ -235,4 +591,3 @@ const projectConfig = {
       }
   }
 };
-

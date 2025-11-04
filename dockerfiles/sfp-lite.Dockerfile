@@ -1,9 +1,10 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 
 
 ARG GIT_COMMIT
-ARG NODE_MAJOR=18
+ARG NODE_MAJOR=22
+ARG SFP_VERSION
 
 LABEL org.opencontainers.image.description "sfp is a build system for modular development in Salesforce."
 LABEL org.opencontainers.image.licenses "MIT"
@@ -12,7 +13,7 @@ LABEL org.opencontainers.image.documentation "https://docs.flxbl.io/sfp"
 LABEL org.opencontainers.image.revision $GIT_COMMIT
 LABEL org.opencontainers.image.vendor "Flxbl"
 LABEL org.opencontainers.image.source "https://github.com/flxbl-io/sfp"
-LABEL org.opencontainers.image.title "Flxbl sfp lite docker image - June 24"
+LABEL org.opencontainers.image.title "Flxbl sfp lite docker image - December 24"
 
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -56,7 +57,7 @@ RUN mkdir -p /etc/apt/keyrings \
 
 # Install sfp
 RUN npm install --global --omit=dev \
-    @flxbl-io/sfp@${SFPOWERSCRIPTS_VERSION} 
+    @flxbl-io/sfp@${SFP_VERSION} 
 
 WORKDIR /root
 

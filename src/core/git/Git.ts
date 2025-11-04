@@ -1,8 +1,10 @@
 import SFPLogger, { Logger, LoggerLevel } from '@flxbl-io/sfp-logger';
 import simplegit, { SimpleGit } from 'simple-git';
 import fs = require('fs-extra');
+import path = require('path');
+import ignore from 'ignore';
 import GitIdentity from './GitIdentity';
-const tmp = require('tmp');
+import tmp from 'tmp';
 
 //Git Abstraction
 export default class Git {
@@ -135,7 +137,27 @@ export default class Git {
         let repoDir = locationOfCopiedDirectory.name;
 
         // Copy source directory to temp dir
-        fs.copySync(process.cwd(), repoDir);
+        const gitignore = ignore();
+        const gitignorePath = `${process.cwd()}/.gitignore`;
+        if (fs.existsSync(gitignorePath)) {
+            const gitignoreContent = fs.readFileSync(gitignorePath).toString();
+            gitignore.add(gitignoreContent);
+        }
+
+        // Copy source directory to temp dir respecting .gitignore
+        fs.copySync(process.cwd(), repoDir, {
+            filter: (src) => {
+                const relativePath = path.relative(process.cwd(), src);
+
+                // Always include root directory
+                if (!relativePath) {
+                    return true;
+                }
+
+                // Check if file should be ignored
+                return !gitignore.ignores(relativePath);
+            },
+        });
 
         //Initiate git on new repo on using the abstracted object
         let git = new Git(repoDir, logger);
@@ -172,7 +194,7 @@ export default class Git {
 
     public raw(commands: string[]) {
         return this._git.raw(commands);
-    }   
+    }
 
     public getRepositoryPath() {
         return this.repositoryLocation;
@@ -185,8 +207,8 @@ export default class Git {
     async addSafeConfig(repoDir: string) {
         try
         {
-        //add workaround for safe directory (https://github.com/actions/runner/issues/2033)
-        await this._git.addConfig('safe.directory', repoDir, false, 'global');
+            //add workaround for safe directory (https://github.com/actions/runner/issues/2033)
+            await this._git.addConfig('safe.directory', repoDir, false, 'global');
         }catch(error)
         {
             //ignore error

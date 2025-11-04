@@ -26,6 +26,38 @@ This has a considerable impact on the developer experience and is one of the mos
      An automated depenedency resolver can be used to address the missing dependencies by computing it from the  previous packages. This will be tied into a process enhancement in the build command where packages will be expanded with all the dependencies before being requested for build. In addition two addtional commands will provided such as 'shrink' and 'expand'. Shrink could be used by a developer to generate a concise form of sfdx-project.json with all the transitive dependencies removed. Expand as the name suggest exactly does the reverse. This will reduce the verbosity seen in many projects and allows to maintain fidelity with other tools/plugins
      
 ## Decision
- 
-sfpowerscripts will be utilizing option #3 
-      
+
+Option 3 has been chosen as the preferred solution. This approach provides the following benefits:
+
+1. **Maintains Compatibility**: By working with the existing sfdx-project.json format, we ensure compatibility with all SFDX tools and plugins.
+
+2. **Reduces Verbosity**: Developers can maintain a minimal sfdx-project.json with direct dependencies, while the resolver expands it to include all transitive dependencies.
+
+3. **Early Detection**: The resolver helps identify missing or problematic dependencies early in the development cycle.
+
+4. **Strict Dependency Validation**: 
+   - Enforces Salesforce's requirement that package dependencies must be acyclic
+   - Fails fast when circular dependencies are detected
+   - Provides clear error messages to help developers resolve dependency issues
+
+5. **Flexible Workflow**: The 'shrink' and 'expand' commands allow developers to switch between concise and complete dependency declarations as needed.
+
+## Consequences
+
+1. **Positive**:
+   - Reduced maintenance burden for developers
+   - Early detection of dependency issues
+   - Strict enforcement of Salesforce's package dependency requirements
+   - Maintains compatibility with existing tools
+
+2. **Negative**:
+   - Additional processing step during build
+   - Build failures when circular dependencies are detected (though this is desired behavior)
+
+3. **Neutral**:
+   - Teams need to decide whether to commit expanded or shrunk sfdx-project.json
+
+## References
+
+- Issue #855
+- [Salesforce Package Development Model](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_dev2gp_plan_pkg_model.htm)

@@ -1,5 +1,113 @@
 # Changelog
 
+## [39.8.0](https://github.com/flxbl-io/sfp/compare/v39.7.0...v39.8.0) (2025-08-25)
+
+
+### Features
+
+* **docker:** update docker with latest cli versions ([783787e](https://github.com/flxbl-io/sfp/commit/783787e5dc2d6dd0d0745871bee07a71d60aae90))
+
+
+### Bug Fixes
+
+* **wf:** update to pre release ([d8391c8](https://github.com/flxbl-io/sfp/commit/d8391c8d92e7cfa6286df92a32089b3f32ab88c1))
+
+## [39.7.0](https://github.com/flxbl-io/sfp/compare/v39.6.1...v39.7.0) (2025-08-25)
+
+
+### Features
+
+* **deployment:** Use native SF polling instead of hard coded 30 seconds ([#176](https://github.com/flxbl-io/sfp/issues/176)) ([3b46046](https://github.com/flxbl-io/sfp/commit/3b460461892564df54df478328d57bf8b43ff10a))
+* upgrade salesforce dependencies and migrate to oclif v4 ([#180](https://github.com/flxbl-io/sfp/issues/180)) ([9fa2e8e](https://github.com/flxbl-io/sfp/commit/9fa2e8e4a47207c9f23a6613eb1687583fea8d57))
+
+
+### Bug Fixes
+
+* **tests:** add space in log messages for better readability ([#168](https://github.com/flxbl-io/sfp/issues/168)) ([891e2a1](https://github.com/flxbl-io/sfp/commit/891e2a1580805936ff94388cc63aecce8efd016d))
+
+## [39.6.1](https://github.com/flxbl-io/sfp/compare/v39.6.0...v39.6.1) (2025-06-26)
+
+
+### Bug Fixes
+
+* streamline child component processing in FHTEnabler and FTEnabler ([#167](https://github.com/flxbl-io/sfp/issues/167)) ([0ee696c](https://github.com/flxbl-io/sfp/commit/0ee696cd9c90ede80e2e3f8450c28d171d4e8506))
+* update type definitions and clean up unused imports ([096c42e](https://github.com/flxbl-io/sfp/commit/096c42ebdf91fad98f4fe084db7cbee63da3754d))
+
+## [39.6.0](https://github.com/flxbl-io/sfp/compare/v39.5.1...v39.6.0) (2025-03-26)
+
+
+### Features
+
+* **ci:** retrieve and use version from package.json in Docker build ([25e7bf7](https://github.com/flxbl-io/sfp/commit/25e7bf724ef4a2b9e89e6ee99fe683c29e97d046))
+* **deps:** add cross-env to package.json for cross-platform compatibility ([28ae6f3](https://github.com/flxbl-io/sfp/commit/28ae6f3b01a77028b9bb38ac373a35b99d4636be))
+
+
+### Bug Fixes
+
+* **git:** add /tests/ to .gitignore ([741ade8](https://github.com/flxbl-io/sfp/commit/741ade881b927d8c65af8aa89e7149d98fc5d9ae))
+
+## [39.5.1](https://github.com/flxbl-io/sfp/compare/v39.5.0...v39.5.1) (2025-02-17)
+
+
+### Bug Fixes
+
+* **profiles:** update sfp profiles to 5.2.1 ([14af1f0](https://github.com/flxbl-io/sfp/commit/14af1f096566ad0cef3749abee631d68ce2abd48))
+
+## [39.5.0](https://github.com/flxbl-io/sfp/compare/v39.4.1...v39.5.0) (2025-02-12)
+
+
+### Features
+
+* **deps:** bump salesforce libs ([#157](https://github.com/flxbl-io/sfp/issues/157)) ([9ab1eca](https://github.com/flxbl-io/sfp/commit/9ab1eca9ec939af942a29d40a3c6f825528d0ddd))
+
+
+### Bug Fixes
+
+* **git:** respect .gitignore when copying source directory ([#158](https://github.com/flxbl-io/sfp/issues/158)) ([3592c50](https://github.com/flxbl-io/sfp/commit/3592c502efeac3b7fc13f02a7ddaa2a4627f3164))
+* **tracking:** ensure local tracking after resetting remote tracking ([#152](https://github.com/flxbl-io/sfp/issues/152)) ([3e312e9](https://github.com/flxbl-io/sfp/commit/3e312e9e700e7d93143e016ae78f1d54deaecf43))
+
+## [39.4.1](https://github.com/flxbl-io/sfp/compare/v39.4.0...v39.4.1) (2024-12-16)
+
+
+### Bug Fixes
+
+* **docker:** fix incorrect version being passed in during docker build ([68b6447](https://github.com/flxbl-io/sfp/commit/68b64478f7e888fdf6e5abe7e7901b6d3c6d283b))
+
+## [39.4.0](https://github.com/flxbl-io/sfp/compare/v39.3.1...v39.4.0) (2024-12-16)
+
+
+### Features
+
+* **deps:** update dependencies of docker images ([#147](https://github.com/flxbl-io/sfp/issues/147)) ([1a8b754](https://github.com/flxbl-io/sfp/commit/1a8b7548a78d1e11da742244141f35c7ed29c87b))
+
+
+### Bug Fixes
+
+* **artifact:** remove change as part of [#128](https://github.com/flxbl-io/sfp/issues/128) ([4a32970](https://github.com/flxbl-io/sfp/commit/4a32970208a052df338b729d396e51f01141ff26))
+* **artifact:** undo earlier fix from [#128](https://github.com/flxbl-io/sfp/issues/128) ([2e138b0](https://github.com/flxbl-io/sfp/commit/2e138b0cc0f6da6dadb7c686f12c3b1e4ba98031))
+
+## [39.3.1](https://github.com/flxbl-io/sfp/compare/v39.3.0...v39.3.1) (2024-12-15)
+
+
+### Bug Fixes
+
+* an empty commit to trigger release please ([d8cb2a3](https://github.com/flxbl-io/sfp/commit/d8cb2a3178b4052c374090376c597dc68e684194))
+* **sfp:** add community edition notice ([317eff9](https://github.com/flxbl-io/sfp/commit/317eff93d6625249f736564068804d755e0dedf6))
+
+## [39.3.0](https://github.com/flxbl-io/sfp/compare/v39.2.3...v39.3.0) (2024-12-03)
+
+
+### Features
+
+* **pool:** add password to fetched scratch org from pool ([#135](https://github.com/flxbl-io/sfp/issues/135)) ([299859b](https://github.com/flxbl-io/sfp/commit/299859b3e4f1c47c5660cf379f653f9ecec5a14b))
+
+
+### Bug Fixes
+
+* **dependency:** fix incorrect dependency resolution by favouring latest ([#143](https://github.com/flxbl-io/sfp/issues/143)) ([5e0dd5b](https://github.com/flxbl-io/sfp/commit/5e0dd5bdf1481780f0067859b30eb8180fc5a078))
+* error in windows "Error: EPERM: operation not permitted, unlink" ([#134](https://github.com/flxbl-io/sfp/issues/134)) ([357b118](https://github.com/flxbl-io/sfp/commit/357b11885872dfd59ef608a5c025147ccfac1ea1))
+* **sfppackage:** fix handling of URL-encoded spaces in repository URLs ([#138](https://github.com/flxbl-io/sfp/issues/138)) ([c50cd25](https://github.com/flxbl-io/sfp/commit/c50cd254a3faa675a9f717e1b2c758b575ce64c5))
+
 ## [39.2.3](https://github.com/flxbl-io/sfp/compare/v39.2.2...v39.2.3) (2024-10-20)
 
 

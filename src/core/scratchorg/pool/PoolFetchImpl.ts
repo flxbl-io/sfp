@@ -216,8 +216,14 @@ export default class PoolFetchImpl extends PoolBaseImpl {
               
 
                 const oauth2Options = AuthInfo.parseSfdxAuthUrl(soDetail.sfdxAuthUrl);
-                const authInfo = await AuthInfo.create({ oauth2Options });
-                await authInfo.save({...authInfo.getFields(),isScratch:true,devHubUsername:this.hubOrg.getUsername(),expirationDate:soDetail.expiryDate});
+                const authInfo = await AuthInfo.create({oauth2Options});
+                await authInfo.save({
+                    ...authInfo.getFields(),
+                    isScratch: true,
+                    devHubUsername: this.hubOrg.getUsername(),
+                    expirationDate: soDetail.expiryDate,
+                    password: soDetail.password
+                });
 
                 await authInfo.handleAliasAndDefaultSettings({
                     alias: this.alias?this.alias:soDetail.alias,

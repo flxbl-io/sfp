@@ -39,7 +39,9 @@ export default class ArtifactGenerator {
                 rimraf.sync(path.join(sfpPackage.workingDirectory, '.sfdx'));
 
             fs.copySync(sfpPackage.workingDirectory, sourcePackage);
-            rimraf.sync(sfpPackage.workingDirectory);
+            // rimraf.sync(sfpPackage.workingDirectory); // This gives an error in windows "Error: EPERM: operation not permitted, unlink" https://github.com/flxbl-io/sfp/issues/128
+            await fs.remove(sfpPackage.workingDirectory);
+        
 
             //Modify Source Directory to the new source directory inside the artifact
             sfpPackage.sourceDir = `source`;
@@ -82,7 +84,9 @@ export default class ArtifactGenerator {
             );
 
             // Cleanup unzipped artifact
-            rimraf.sync(artifactFilepath);
+            // https://github.com/flxbl-io/sfp/issues/128
+            // Undo fix for #128, use a different approach as its failing in docker
+            await fs.remove(artifactFilepath);
 
             return zipArtifactFilepath;
         } catch (error) {

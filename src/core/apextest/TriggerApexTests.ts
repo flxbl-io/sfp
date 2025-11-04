@@ -256,13 +256,13 @@ export default class TriggerApexTests {
         } else if (testOptions instanceof RunLocalTests) {
             translatedTestLevel = TestLevel.RunLocalTests;
             SFPLogger.log(
-                `Triggering all ${COLOR_KEY_MESSAGE(`local tests`)}in the org`,
+                `Triggering all ${COLOR_KEY_MESSAGE(`local tests`)} in the org`,
                 LoggerLevel.INFO,
                 this.fileLogger
             );
         } else if (testOptions instanceof RunAllTestsInOrg) {
             SFPLogger.log(
-                `Triggering all ${COLOR_KEY_MESSAGE(`all tests`)}in the org`,
+                `Triggering all ${COLOR_KEY_MESSAGE(`all tests`)} in the org`,
                 LoggerLevel.INFO,
                 this.fileLogger
             );
