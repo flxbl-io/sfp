@@ -29,11 +29,12 @@ export default class PicklistAnalyzer implements PackageAnalyzer {
             }
 
             if (components && components.length > 0) {
+                const picklistTypes = ['Picklist', 'MultiselectPicklist'];
                 for (const fieldComponent of components) {
                     let customField = fieldComponent.parseXmlSync().CustomField;
                     //issues/1367
                     //if the component isn't a field customField will be undefined..so check
-                    if (customField && customField['type'] == 'Picklist') {
+                    if (customField && picklistTypes.includes(customField.type)) {
                         sfpPackage.isPickListsFound= true;
                         break;
                     }

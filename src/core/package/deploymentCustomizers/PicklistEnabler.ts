@@ -47,12 +47,13 @@ export default class PicklistEnabler implements DeploymentCustomizer {
             }
 
             if (components) {
+                const picklistTypes = ['Picklist', 'MultiselectPicklist'];
                 for (const fieldComponent of components) {
                     let customField = fieldComponent.parseXmlSync().CustomField;
                     //check for empty picklists
                     if (
                         !customField ||
-                        customField['type'] !== 'Picklist' ||
+                        !picklistTypes.includes(customField.type) ||
                         !customField.valueSet?.valueSetDefinition
                     ) {
                         continue;
