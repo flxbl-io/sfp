@@ -21,6 +21,7 @@ import { COLOR_SUCCESS } from '@flxbl-io/sfp-logger';
 import { COLOR_ERROR } from '@flxbl-io/sfp-logger';
 import getFormattedTime from '../../utils/GetFormattedTime';
 import path from 'path';
+const retry = require('async-retry');
 
 export default class PoolCreateImpl extends PoolBaseImpl {
     private limiter;
@@ -240,13 +241,23 @@ export default class PoolCreateImpl extends PoolBaseImpl {
             let index = scratchOrgs.length;
             while (index--) {
                 try {
-                    const orgDetails = await new OrgDetailsFetcher(scratchOrgs[index].username).getOrgDetails();
+                    const orgDetails = await retry(
+                        async (bail) => {
+                            return await new OrgDetailsFetcher(scratchOrgs[index].username).getOrgDetails();
+                        },
+                        { retries: 3, minTimeout: 2000 }
+                    );
+
                     if (orgDetails.status === 'Deleted') {
                         throw new Error(
-                            `Throwing away scratch org ${this.pool.scratchOrgs[index].alias} as it has a status of deleted`
+                            `Throwing away scratch org ${scratchOrgs[index].alias} as it has a status of deleted`
                         );
                     }
                 } catch (error) {
+                    SFPLogger.log(
+                        `Unable to check status of scratch org ${scratchOrgs[index].username} due to ${error.message}`,
+                        LoggerLevel.WARN
+                    );
                     scratchOrgs.splice(index, 1);
                 }
             }
