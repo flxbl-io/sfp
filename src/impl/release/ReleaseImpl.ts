@@ -402,7 +402,7 @@ export default class ReleaseImpl {
             releaseDefinition.promotePackagesBeforeDeploymentToOrg &&
             releaseDefinition.promotePackagesBeforeDeploymentToOrg == props.targetOrg
         )
-            SFPLogger.log(COLOR_KEY_MESSAGE(`Promte Packages Before Deployment Activated?: true`));
+            SFPLogger.log(COLOR_KEY_MESSAGE(`Promote Packages Before Deployment Activated?: true`));
 
         SFPLogger.printHeaderLine('', COLOR_HEADER, LoggerLevel.INFO);
     }
