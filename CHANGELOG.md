@@ -1,5 +1,15 @@
 # Changelog
 
+## [39.8.1](https://github.com/flxbl-io/sfp/compare/v39.8.0...v39.8.1) (2025-12-09)
+
+
+### Bug Fixes
+
+* **engine:** handle fields getting undefined for picklist ([6c8c712](https://github.com/flxbl-io/sfp/commit/6c8c7127891136f4bc5773f21e7c394d0f0af5a9))
+* **engine:** implement retry logic for fetching org details ([#204](https://github.com/flxbl-io/sfp/issues/204)) ([517689b](https://github.com/flxbl-io/sfp/commit/517689bea6ec9a24b513c5b67ff7d2866ec03b83))
+* **release:** correct typo in log message for package promotion ([#203](https://github.com/flxbl-io/sfp/issues/203)) ([01af673](https://github.com/flxbl-io/sfp/commit/01af6737cd90e97f8f4f35d2b0475ba3fc68e1d1))
+* **schema:** update typos in sfdx-project.schema.json ([cc39d24](https://github.com/flxbl-io/sfp/commit/cc39d24703c871bcae8a4e2bcb5be5286df960e5))
+
 ## [39.8.0](https://github.com/flxbl-io/sfp/compare/v39.7.0...v39.8.0) (2025-08-25)
 
 
