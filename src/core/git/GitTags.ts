@@ -24,7 +24,11 @@ export default class GitTags {
 
     private async filterTagsAgainstBranch(tags: string[]): Promise<string[]> {
         // Get full-length commit ID's on the current branch, following the first parent on merge commits
-        let commits: string[] = await this.git.log([`--pretty=format:%H`, `--first-parent`]);
+        let commits: string[] = child_process.execSync(`git log --pretty=format:%H`, {
+            maxBuffer: 5 * 1024 * 1024,
+            stdio: 'pipe',
+            cwd: this.git.getRepositoryPath()
+        }).toString().split('\n');
 
         // Get the tags' associated commit ID
         // Dereference (-d) tags into object IDs
