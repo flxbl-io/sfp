@@ -283,7 +283,7 @@ export default class ReleaseImpl {
         let sfdxProjectConfig = sfpPackageInquirer.getLatestProjectConfig();
        
         let releaseDefinitionSorter = new ReleaseDefinitionSorter();
-        return releaseDefinitionSorter.sortReleaseDefinitions(releaseDefns, sfdxProjectConfig, logger);
+        return await releaseDefinitionSorter.sortReleaseDefinitions(releaseDefns, sfdxProjectConfig, logger);
     }
 
     private async generateSfpPackageFromArtifacts(artifacts: Artifact[], logger: Logger): Promise<SfpPackage[]> {
