@@ -63,6 +63,10 @@ export interface BuildProps {
 	includeOnlyPackages?: string[];
 	impactedPackagesAsPerBranch?: Map<string, string[]>;
 	ref?: string;
+	retryOnConnectionErrors?: boolean;
+	maxConnectionRetries?: number;
+	initialRetryDelay?: number;
+	maxRetryDelay?: number;
 }
 export default class BuildImpl {
 	private limiter: Bottleneck;
