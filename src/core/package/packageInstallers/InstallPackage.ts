@@ -309,8 +309,9 @@ export abstract class InstallPackage {
     private async executePostDeployers() {
         SFPLogger.log(`Executing Post Deployers`, LoggerLevel.INFO, this.logger);
 
+        const isDataPackage = this.sfpPackage.packageType == PackageType.Data;
         //Gather componentSet
-        let componentSet = ComponentSet.fromSource(
+        let componentSet = isDataPackage? undefined:ComponentSet.fromSource(
             path.join(this.sfpPackage.projectDirectory, this.sfpPackage.packageDirectory)
         );
 
@@ -325,10 +326,10 @@ export abstract class InstallPackage {
 
                     await postDeployer.execute(
                         this.sfpPackage,
-                        componentSet,
                         this.sfpOrg,
                         this.logger,
-                        {apiVersion:this.options.apiVersion,waitTime:this.options.waitTime}
+                        {apiVersion:this.options.apiVersion,waitTime:this.options.waitTime},
+                        componentSet
                     );
 
                 } else {
@@ -356,8 +357,9 @@ export abstract class InstallPackage {
     private async executePreDeployers() {
         SFPLogger.log(`Executing Pre Deployers`, LoggerLevel.INFO, this.logger);
 
+        const isDataPackage = this.sfpPackage.packageType == PackageType.Data;
         //Gather componentSet
-        let componentSet = ComponentSet.fromSource(
+        let componentSet = isDataPackage? undefined : ComponentSet.fromSource(
             path.join(this.sfpPackage.projectDirectory, this.sfpPackage.packageDirectory)
         );
 
@@ -366,7 +368,7 @@ export abstract class InstallPackage {
             if(await analyzer.isEnabled(this.sfpPackage, this.logger)) 
             {
               SFPLogger.log(`Executing ${COLOR_KEY_MESSAGE(analyzer.getName())}`, LoggerLevel.INFO, this.logger);
-              this.sfpPackage = await analyzer.analyze(this.sfpPackage,componentSet, this.logger);
+                this.sfpPackage = await analyzer.analyze(this.sfpPackage, this.logger, componentSet);
             }
             else
             {
@@ -385,10 +387,10 @@ export abstract class InstallPackage {
 
                     await preDeployer.execute(
                         this.sfpPackage,
-                        componentSet,
                         this.sfpOrg,
                         this.logger,
-                        {apiVersion:this.options.apiVersion,waitTime:this.options.waitTime}
+                        {apiVersion:this.options.apiVersion,waitTime:this.options.waitTime},
+                        componentSet
                     );
 
                 } else {

@@ -14,7 +14,7 @@ export default class FHTAnalyser implements PackageAnalyzer {
 
     
 
-    public async analyze(sfpPackage: SfpPackage, componentSet:ComponentSet, logger:Logger): Promise<SfpPackage> {
+    public async analyze(sfpPackage: SfpPackage, logger: Logger, componentSet: ComponentSet): Promise<SfpPackage> {
         try {
 
             let fhtFields: { [key: string]: Array<string> } = {};

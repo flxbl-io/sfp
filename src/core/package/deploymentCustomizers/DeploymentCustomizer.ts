@@ -19,9 +19,9 @@ export interface DeploymentCustomizer
   getDeploymentOptions( target_org: string, waitTime: string, apiVersion: string):Promise<DeploymentOptions>
   getName():string
   execute(sfpPackage: SfpPackage,
-    componentSet: ComponentSet,
     sfpOrg:SFPOrg,
     logger: Logger,
-    deploymentContext:DeploymentContext
+    deploymentContext:DeploymentContext,
+    componentSet?: ComponentSet,
     ):Promise<DeploySourceResult>
 }
